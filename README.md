@@ -9,7 +9,7 @@
 
 
 ### sky-eye 架构设计
-
+![img.png](img/img.png)
 ### sky-eye 使用方法
 
 #### [点击查看使用方式](userManual.md)
