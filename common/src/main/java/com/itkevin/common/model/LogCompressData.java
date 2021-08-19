@@ -1,0 +1,72 @@
+package com.itkevin.common.model;
+
+import lombok.Data;
+
+import java.io.Serializable;
+import java.util.List;
+
+@Data
+public class LogCompressData implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 请求URI
+     */
+    private String requestURI;
+
+    /**
+     * 异常信息
+     */
+    private String exceptionMessage;
+
+    /**
+     * error信息
+     */
+    private String errorMessage;
+
+    /**
+     * 报警间隔
+     */
+    private Integer alarmTime;
+
+    /**
+     * 报警次数
+     */
+    private Integer alarmCount;
+
+    /**
+     * traceId集合
+     */
+    private List<String> traceIdList;
+
+    /**
+     * 接口耗时时间阀值
+     */
+    private Long uriElapsedThreshold;
+
+    /**
+     * 接口最大耗时时间
+     */
+    private Long maxUriElapsed;
+
+    /**
+     * 接口最大耗时traceId
+     */
+    private String maxUriElapsedTraceId;
+
+    /**
+     * 服务名称
+     */
+    private String serverName;
+
+    /**
+     * 服务器IP
+     */
+    private String serverIP;
+
+    /**
+     * 服务器hostname
+     */
+    private String serverHostname;
+
+}

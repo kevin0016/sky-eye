@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.skyeye.k12.teacher.logback.api.config.LogbackConfig

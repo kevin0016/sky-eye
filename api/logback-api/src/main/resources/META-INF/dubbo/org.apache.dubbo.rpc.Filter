@@ -1,0 +1,2 @@
+logApacheMDCClearDubboFilter=com.skyeye.k12.teacher.common.filter.LogApacheMDCClearDubboFilter
+logApacheDubboFilter=com.skyeye.k12.teacher.common.filter.LogApacheDubboFilter
