@@ -9,6 +9,7 @@ import com.itkevin.common.enums.LogConstantEnum;
 import com.itkevin.common.enums.MDCConstantEnum;
 import com.itkevin.common.enums.RequestTypeEnum;
 import com.itkevin.common.model.*;
+import com.itkevin.common.notice.dingding.DingTalkUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;

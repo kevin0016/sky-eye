@@ -44,7 +44,7 @@ public class LocalCacheUtils {
     /**
      * 存储int缓存
      */
-    protected static void putIntCache(String key, Integer value) {
+    public static void putIntCache(String key, Integer value) {
         try {
             if (StringUtils.isNotBlank(key) && value != null) {
                 key = KEY_INT + key;
@@ -58,7 +58,7 @@ public class LocalCacheUtils {
     /**
      * 获取int缓存
      */
-    protected static Integer getIntCache(String key) {
+    public static Integer getIntCache(String key) {
         try {
             if (StringUtils.isNotBlank(key)) {
                 key = KEY_INT + key;

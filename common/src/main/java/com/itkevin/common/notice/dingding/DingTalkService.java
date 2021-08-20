@@ -1,4 +1,4 @@
-package com.itkevin.common.util;
+package com.itkevin.common.notice.dingding;
 
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;

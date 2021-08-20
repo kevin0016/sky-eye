@@ -1,4 +1,4 @@
-package com.itkevin.common.util;
+package com.itkevin.common.notice.dingding;
 
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.http.HttpUtil;
@@ -10,6 +10,9 @@ import com.itkevin.common.enums.MDCConstantEnum;
 import com.itkevin.common.model.DingConfigData;
 import com.itkevin.common.model.DingMarkDownMessage;
 import com.itkevin.common.model.DingMessage;
+import com.itkevin.common.util.ConfigUtils;
+import com.itkevin.common.util.LocalCacheUtils;
+import com.itkevin.common.util.StringConverterFactory;
 import com.jakewharton.retrofit2.adapter.reactor.ReactorCallAdapterFactory;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
@@ -26,6 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -101,11 +105,6 @@ public class DingTalkUtils {
             String sign = StringUtils.isNotBlank(secret) ? signData(timestamp, secret) : "";
             RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), jsonContent);
             log.info("log skyeye >>> send dingding accessToken: {}, timestamp: {}, sign: {}", accessToken, timestamp, sign);
-            /*Call<ResponseBody> call = dingTalkService.robotSendCall(accessToken, timestamp, sign, requestBody);
-            Response<ResponseBody> response = call.execute();
-            ResponseBody responseBody = response.body();*/
-            /*Mono<Response<String>> mono = dingTalkService.robotSendMonoStr(accessToken, timestamp, sign, requestBody);
-            String string = mono.blockOptional().map(Response::body).orElse(null);*/
             Mono<Response<ResponseBody>> mono = dingTalkService.robotSendMono(accessToken, timestamp, sign, requestBody);
             ResponseBody responseBody = mono.blockOptional().map(Response::body).orElse(null);
             String string = responseBody != null ? responseBody.string() : "";
@@ -123,47 +122,6 @@ public class DingTalkUtils {
             return false;
         }
     }
-
-    /**
-     * 发送
-     * @param webHook
-     * @param accessToken
-     * @param secret
-     * @param jsonContent
-     * @return
-     */
-    /*private static boolean send(String webHook, String accessToken, String secret, String jsonContent) {
-        try {
-            String type = "application/json; charset=utf-8";
-            RequestBody body = RequestBody.create(MediaType.parse(type), jsonContent);
-            String apiUrl = webHook;
-            if (null == apiUrl || "".equals(apiUrl)) {
-                apiUrl = "https://oapi.dingtalk.com/robot/send?access_token=" + accessToken;
-            }
-            if (!StringUtils.isEmpty(secret)) {
-                Long time = System.currentTimeMillis();
-                apiUrl = apiUrl + "&timestamp=" + time + "&sign=" + signData(time, secret);
-            }
-            Request.Builder builder = (new Request.Builder()).url(apiUrl);
-            builder.addHeader("Content-Type", type).post(body);
-            log.info("log skyeye >>> apiUrl: {}", apiUrl);
-            Request request = builder.build();
-            Response response = client.newCall(request).execute();
-            String string = response.body().string();
-            log.info("log skyeye >>> send dingding result: {}", string);
-            if (string.contains("<!DOCTYPE html>")) {
-                return false;
-            }
-            JSONObject result = JSONUtil.parseObj(string);
-            if (result.get("errcode") == null || !"0".equals(String.valueOf(result.get("errcode")))) {
-                return false;
-            }
-            return true;
-        } catch (Exception e) {
-            log.warn("log skyeye >>> DingTalkUtils.send occur exception", e);
-            return false;
-        }
-    }*/
 
     /**
      * 验签
@@ -213,15 +171,15 @@ public class DingTalkUtils {
     }
 
     public static void main(String[] args) {
-        /*List<DingConfigData> dingConfigDataList = new ArrayList<>();
-        DingConfigData dingConfigData1= new DingConfigData();
-        dingConfigData1.setWebHook("https://oapi.dingtalk.com/robot/send?access_token=ec2ee44dedaa1207e1fa4541e97f7a4489f6bbad8e17a8e98d85a0fd97fc69aa");
-        dingConfigData1.setSecret("SEC2e6249a1bf419db8a89643ebf2625dbc0c3e47af12ce130a6582415d3f38da05");
-        DingConfigData dingConfigData2= new DingConfigData();
-        dingConfigData2.setWebHook("https://oapi.dingtalk.com/robot/send?access_token=389678a82224d8a53bcb592ac00a406ce14654c045f88d2026e7ef32a49febd2");
-        dingConfigData2.setSecret("SECc193b8c3b7e47ad0fd4821bf26f08dc777010ecef372689604922b1c78e8184c");
-        dingConfigDataList.add(dingConfigData1);
-        dingConfigDataList.add(dingConfigData2);*/
+//        List<DingConfigData> dingConfigDataList = new ArrayList<>();
+//        DingConfigData dingConfigData1= new DingConfigData();
+//        dingConfigData1.setWebHook("https://oapi.dingtalk.com/robot/send?access_token=xxxx");
+//        dingConfigData1.setSecret("SEC2e6249a1bf419db8a89643ebf2625dbc0c3e47af12ce130a6582415d3f38da05");
+//        DingConfigData dingConfigData2= new DingConfigData();
+//        dingConfigData2.setWebHook("https://oapi.dingtalk.com/robot/send?access_token=xxxx");
+//        dingConfigData2.setSecret("SECc193b8c3b7e47ad0fd4821bf26f08dc777010ecef372689604922b1c78e8184c");
+//        dingConfigDataList.add(dingConfigData1);
+//        dingConfigDataList.add(dingConfigData2);
 
         DingMarkDownMessage message = new DingMarkDownMessage();
         message.setTitle("出错啦！");
