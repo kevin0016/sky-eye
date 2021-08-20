@@ -8,5 +8,9 @@ import okhttp3.OkHttpClient;
  */
 public interface NoticeInterface {
 
+    /**
+     * 发送消息
+     * @param baseMessage
+     */
     public void sendMessage(BaseMessage baseMessage);
 }

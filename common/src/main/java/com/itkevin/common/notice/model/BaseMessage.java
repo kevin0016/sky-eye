@@ -1,6 +1,7 @@
 package com.itkevin.common.notice.model;
 
 import cn.hutool.json.JSONObject;
+import com.itkevin.common.enums.LogLevelEnum;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
@@ -13,6 +14,7 @@ public class BaseMessage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * {@link LogLevelEnum}
      * 消息级别
      */
     private String level;

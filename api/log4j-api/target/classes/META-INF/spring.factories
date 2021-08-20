@@ -1,2 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.skyeye.k12.teacher.log4j.api.config.Log4jConfig
