@@ -1,4 +1,4 @@
-package com.itkevin.common.model;
+package com.itkevin.common.notice.dingding;
 
 import lombok.Data;
 

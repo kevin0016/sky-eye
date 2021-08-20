@@ -1,5 +1,6 @@
 package com.itkevin.common.notice.workwx;
 
+import com.itkevin.common.notice.NoticeInterface;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import reactor.core.publisher.Mono;

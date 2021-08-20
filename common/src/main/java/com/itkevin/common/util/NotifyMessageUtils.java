@@ -9,7 +9,8 @@ import com.itkevin.common.enums.LogConstantEnum;
 import com.itkevin.common.enums.MDCConstantEnum;
 import com.itkevin.common.enums.RequestTypeEnum;
 import com.itkevin.common.model.*;
-import com.itkevin.common.notice.dingding.DingTalkUtils;
+import com.itkevin.common.notice.dingding.DingMarkDownMessage;
+import com.itkevin.common.notice.dingding.DingTalkNotice;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -140,7 +141,7 @@ public class NotifyMessageUtils {
         builder = SysConstant.WELCOME.equals(logData.getErrorMessage()) ? getWelcomeContent(logData) : builder;
         message.setContent(builder.toString());
         // 发送
-        DingTalkUtils.sendMessage(message);
+        DingTalkNotice.getInstance().sendMessage(message);
     }
 
     /**
@@ -205,7 +206,7 @@ public class NotifyMessageUtils {
                 "+ " + LogConstantEnum.SERVER_HOSTNAME.getName() + "：" + logCompressData.getServerHostname();
         message.setContent(builder);
         // 发送
-        DingTalkUtils.sendMessage(message);
+        DingTalkNotice.getInstance().sendMessage(message);
     }
 
     /**
@@ -228,7 +229,7 @@ public class NotifyMessageUtils {
                 "+ " + LogConstantEnum.SERVER_HOSTNAME.getName() + "：" + logUriElapsedData.getServerHostname();
         message.setContent(builder);
         // 发送
-        DingTalkUtils.sendMessage(message);
+        DingTalkNotice.getInstance().sendMessage(message);
     }
 
 }

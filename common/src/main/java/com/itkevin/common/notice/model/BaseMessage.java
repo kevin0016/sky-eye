@@ -1,4 +1,4 @@
-package com.itkevin.common.model;
+package com.itkevin.common.notice.model;
 
 import cn.hutool.json.JSONObject;
 import lombok.Data;
@@ -8,7 +8,8 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class DingMessage implements Serializable {
+public class BaseMessage implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /**

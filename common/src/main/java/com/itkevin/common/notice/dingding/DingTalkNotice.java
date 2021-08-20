@@ -6,21 +6,17 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
-import com.itkevin.common.enums.MDCConstantEnum;
-import com.itkevin.common.model.DingConfigData;
-import com.itkevin.common.model.DingMarkDownMessage;
-import com.itkevin.common.model.DingMessage;
+import com.itkevin.common.notice.AbstractNotice;
+import com.itkevin.common.notice.model.BaseMessage;
 import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.StringConverterFactory;
 import com.jakewharton.retrofit2.adapter.reactor.ReactorCallAdapterFactory;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import reactor.core.publisher.Mono;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -29,14 +25,29 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class DingTalkUtils {
+public class DingTalkNotice extends AbstractNotice {
+
+    private static volatile DingTalkNotice dingTalkNotice;
+
+    public static DingTalkNotice getInstance(){
+        try {
+            if(null == dingTalkNotice){
+                synchronized (DingTalkNotice.class){
+                    if(null == dingTalkNotice){
+                        dingTalkNotice = new DingTalkNotice();
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return dingTalkNotice;
+    }
 
     /**
      * 钉钉服务接口（retrofit2-reactor-adapter：https://github.com/JakeWharton/retrofit2-reactor-adapter）
@@ -53,13 +64,14 @@ public class DingTalkUtils {
     /**
      * 钉钉机器人标识
      */
-    private static final String WEBHOOK_INDEX = "WEBHOOK_INDEX";
+    private static final String WEBHOOK_INDEX = "DINGDING_WEBHOOK_INDEX";
 
     /**
      * 发送钉钉消息
      * @param dingMessage
      */
-    public static void sendMessage(DingMessage dingMessage) {
+    @Override
+    public void sendMessage(BaseMessage dingMessage) {
         try {
             String level = dingMessage.getLevel();
             String alarmDingTalk = StringUtils.isNotBlank(level) && level.equals(LogLevelEnum.SERIOUS.name())
@@ -81,7 +93,7 @@ public class DingTalkUtils {
      * @param dingConfigDataList
      * @param jsonContent
      */
-    private static void send(List<DingConfigData> dingConfigDataList, String jsonContent) {
+    private void send(List<DingConfigData> dingConfigDataList, String jsonContent) {
         int currentIndex = getIndex(dingConfigDataList.size());
         DingConfigData dingConfigData = dingConfigDataList.get(currentIndex);
         String accessToken = dingConfigData.getAccessToken();
@@ -99,7 +111,7 @@ public class DingTalkUtils {
      * @param secret
      * @param jsonContent
      */
-    private static boolean send(String accessToken, String secret, String jsonContent) {
+    private boolean send(String accessToken, String secret, String jsonContent) {
         try {
             Long timestamp = System.currentTimeMillis();
             String sign = StringUtils.isNotBlank(secret) ? signData(timestamp, secret) : "";
@@ -129,7 +141,7 @@ public class DingTalkUtils {
      * @param secret
      * @return
      */
-    private static String signData(Long timestamp, String secret) {
+    private String signData(Long timestamp, String secret) {
         try {
             String stringToSign = timestamp + "\n" + secret;
             Mac mac = Mac.getInstance("HmacSHA256");
@@ -142,25 +154,14 @@ public class DingTalkUtils {
         }
     }
 
-    /**
-     * 初始化OkHttpClient实例
-     * @return
-     */
-    private static OkHttpClient initOkHttpClient() {
-        return new OkHttpClient.Builder()
-                .retryOnConnectionFailure(true)
-                .connectTimeout(500, TimeUnit.MILLISECONDS)
-                .readTimeout(500, TimeUnit.MILLISECONDS)
-                .writeTimeout(500, TimeUnit.MILLISECONDS)
-                .build();
-    }
+
 
     /**
      * 获取第几个机器人
      * @param totalCount
      * @return
      */
-    private static synchronized int getIndex(int totalCount) {
+    private synchronized int getIndex(int totalCount) {
         int currentIndex = LocalCacheUtils.getIntCache(WEBHOOK_INDEX);
         if (currentIndex > totalCount - 1) {
             currentIndex = 0;
@@ -181,30 +182,30 @@ public class DingTalkUtils {
 //        dingConfigDataList.add(dingConfigData1);
 //        dingConfigDataList.add(dingConfigData2);
 
-        DingMarkDownMessage message = new DingMarkDownMessage();
-        message.setTitle("出错啦！");
-        String exceptionMessage;
-        String exceptionStackTrace;
-        try {
-            throw new RuntimeException("异常message");
-        } catch (Exception e) {
-            exceptionMessage = e.getMessage();
-            exceptionStackTrace = ExceptionUtils.getStackTrace(e);
-        }
-        String content = "## **" + MDCConstantEnum.ERROR_MESSAGE.getName() + "：" + "出错啦！" + "**" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.SERVER_NAME.getName() + "：" + "localhost" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.SOURCE_IP.getName() + "：" + "10.155.8.91" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.SERVER_IP.getName() + "：" + "10.155.8.91" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.SERVER_HOSTNAME.getName() + "：" + "itkevin.it.com" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.OCCURRENCE_TIME.getName() + "：" + "2020-06-23 14:20:05" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.REQUEST_TYPE.getName() + "：" + "http GET" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.TRACE_ID.getName() + "：" + "4696.167.15928932046440001" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.REQUEST_URI.getName() + "：" + "/api/health" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.REQUEST_PARAM.getName() + "：" + "{a=a, b=b}" + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.EXCEPTION_MESSAGE.getName() + "：" + exceptionMessage + System.getProperty("line.separator") +
-                "+ " + MDCConstantEnum.EXCEPTION_STACKTRACE.getName() + "：" + System.getProperty("line.separator") + System.getProperty("line.separator") +
-                "`" + exceptionStackTrace + "`";
-        message.setContent(content);
-        DingTalkUtils.sendMessage(message);
+//        DingMarkDownMessage message = new DingMarkDownMessage();
+//        message.setTitle("出错啦！");
+//        String exceptionMessage;
+//        String exceptionStackTrace;
+//        try {
+//            throw new RuntimeException("异常message");
+//        } catch (Exception e) {
+//            exceptionMessage = e.getMessage();
+//            exceptionStackTrace = ExceptionUtils.getStackTrace(e);
+//        }
+//        String content = "## **" + MDCConstantEnum.ERROR_MESSAGE.getName() + "：" + "出错啦！" + "**" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.SERVER_NAME.getName() + "：" + "localhost" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.SOURCE_IP.getName() + "：" + "10.155.8.91" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.SERVER_IP.getName() + "：" + "10.155.8.91" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.SERVER_HOSTNAME.getName() + "：" + "itkevin.it.com" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.OCCURRENCE_TIME.getName() + "：" + "2020-06-23 14:20:05" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.REQUEST_TYPE.getName() + "：" + "http GET" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.TRACE_ID.getName() + "：" + "4696.167.15928932046440001" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.REQUEST_URI.getName() + "：" + "/api/health" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.REQUEST_PARAM.getName() + "：" + "{a=a, b=b}" + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.EXCEPTION_MESSAGE.getName() + "：" + exceptionMessage + System.getProperty("line.separator") +
+//                "+ " + MDCConstantEnum.EXCEPTION_STACKTRACE.getName() + "：" + System.getProperty("line.separator") + System.getProperty("line.separator") +
+//                "`" + exceptionStackTrace + "`";
+//        message.setContent(content);
+//        DingTalkNotice.sendMessage(message);
     }
 }
