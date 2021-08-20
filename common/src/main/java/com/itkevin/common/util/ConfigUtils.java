@@ -3,6 +3,7 @@ package com.itkevin.common.util;
 import cn.hutool.core.util.NumberUtil;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
+import com.itkevin.common.model.SkyEyeConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,6 +16,8 @@ public class ConfigUtils {
      * 配置属性
      */
     private static final Properties properties = new Properties();
+
+    public static final SkyEyeConfig skyEyeConfig = new SkyEyeConfig();
 
     /**
      * config instance

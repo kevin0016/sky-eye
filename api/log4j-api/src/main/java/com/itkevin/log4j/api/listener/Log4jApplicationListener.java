@@ -25,7 +25,7 @@ public class Log4jApplicationListener implements ApplicationListener<ContextRefr
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        ApplicationContext applicationContext = event.getApplicationContext();
+
         // 添加apollo配置监听器，获取apollo配置放入缓存
         Config config = ConfigUtils.getConfig();
         config.addChangeListener(new ConfigListener());
