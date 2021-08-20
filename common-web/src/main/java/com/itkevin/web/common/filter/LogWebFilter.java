@@ -1,4 +1,4 @@
-package com.itkevin.common.filter;
+package com.itkevin.web.common.filter;
 
 import com.itkevin.common.model.UriElapsedCollect;
 import com.itkevin.common.util.CustomRequestWrapper;
@@ -8,7 +8,12 @@ import com.itkevin.common.util.MDCUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 

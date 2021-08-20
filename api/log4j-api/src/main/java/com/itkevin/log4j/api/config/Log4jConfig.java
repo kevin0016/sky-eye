@@ -1,7 +1,7 @@
 package com.itkevin.log4j.api.config;
 
-import com.itkevin.common.filter.LogWebFilter;
 import com.itkevin.log4j.api.listener.Log4jApplicationListener;
+import com.itkevin.web.common.filter.LogWebFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;

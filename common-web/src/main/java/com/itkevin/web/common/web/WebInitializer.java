@@ -1,6 +1,6 @@
-package com.itkevin.common.web;
+package com.itkevin.web.common.web;
 
-import com.itkevin.common.filter.LogWebFilter;
+import com.itkevin.web.common.filter.LogWebFilter;
 import org.springframework.web.WebApplicationInitializer;
 
 import javax.servlet.DispatcherType;

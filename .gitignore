@@ -1,2 +1,3 @@
 .idea/
 gen_idl/
+*target/

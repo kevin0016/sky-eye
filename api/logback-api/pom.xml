@@ -22,6 +22,11 @@
     <dependencies>
         <dependency>
             <groupId>com.itkevin</groupId>
+            <artifactId>sky-eye-web-common</artifactId>
+            <version>${skyeye-common.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.itkevin</groupId>
             <artifactId>sky-eye-common</artifactId>
             <version>${skyeye-common.version}</version>
         </dependency>
@@ -32,8 +37,9 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <artifactId>servlet-api</artifactId>
             <version>2.5</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

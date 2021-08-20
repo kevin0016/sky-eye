@@ -1,3 +1,4 @@
+com/itkevin/common/util/IPUtils.class
 com/itkevin/common/util/ElapsedUtils.class
 com/itkevin/common/model/DingMarkDownMessage.class
 com/itkevin/common/util/HashedWheelTask.class
@@ -10,13 +11,14 @@ com/itkevin/common/util/NotifyMessageUtils.class
 com/itkevin/common/enums/BusinessTypeEnum.class
 com/itkevin/common/util/ConfigUtils.class
 com/itkevin/common/util/MDCUtils.class
+com/itkevin/common/util/HttpRequestUtil.class
 com/itkevin/common/util/LocalCacheUtils.class
 com/itkevin/common/model/BusinessData.class
 com/itkevin/common/constants/SysConstant.class
-com/itkevin/common/filter/LogApacheMDCClearDubboFilter.class
 com/itkevin/common/model/LogUriElapsedData.class
 com/itkevin/common/model/DingTextMessage.class
 com/itkevin/common/enums/MDCConstantEnum.class
+com/itkevin/common/util/CustomRequestWrapper.class
 com/itkevin/common/util/HashedWheelUtils.class
 com/itkevin/common/util/DingTalkUtils.class
 com/itkevin/common/model/UriElapsedData.class
@@ -26,6 +28,7 @@ com/itkevin/common/util/LogUtils.class
 com/itkevin/common/util/StringConverterFactory.class
 com/itkevin/common/model/FilterMessage.class
 com/itkevin/common/model/UriElapsedCollect.class
+com/itkevin/common/util/CustomRequestWrapper$1.class
 com/itkevin/common/util/SimpleMetricsUtils.class
 com/itkevin/common/enums/LogTypeEnum.class
 com/itkevin/common/listener/ConfigListener.class
@@ -34,7 +37,6 @@ com/itkevin/common/enums/LogConstantEnum.class
 com/itkevin/common/model/HashedWheelData.class
 com/itkevin/common/model/TaskModel.class
 com/itkevin/common/model/DingConfigData.class
-com/itkevin/common/filter/LogApacheDubboFilter.class
 com/itkevin/common/util/MD5Utils.class
 com/itkevin/common/util/CommonConverter.class
 com/itkevin/common/util/DingTalkService.class
