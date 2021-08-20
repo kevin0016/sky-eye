@@ -1,4 +1,9 @@
-# sky-eye
+<div align="center">
+<h1>📝sky-eye</h1>
+<img src="https://img.shields.io/github/license/onblog/BlogHelper"/>
+<img src="https://img.shields.io/static/v1?label=electron&message=7.1.7&color="/>
+<img src="https://img.shields.io/static/v1?label=mac|win|linux&message=7.1.7&color=yellow"/>
+</div>
 
 ## sky-eye：实时日志报警系统
 
