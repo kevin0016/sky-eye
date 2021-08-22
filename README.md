@@ -73,6 +73,7 @@ skyeye.log.alarm.uri.elapsed.count = 10
 skyeye.log.alarm.uri.elapsed = [{"uri":"/user/logTest","elapsed":2000}]
 # 指定接口耗时时间阀值（单位毫秒，全局指定，不配置默认1000毫秒）
 skyeye.log.alarm.uri.elapsed.global = 1000
+skyeye.log.alarm.tool = wework
 ```
 ###### 备注
 - 目前接口超时报警仅支持web,后期会同步支持部分的rpc框架

@@ -118,7 +118,7 @@ public class SysConstant {
     /**
      * skyeye异常报警途径
      */
-    public static final String ALARM_TOOL = "skyeye异常报警途径";
+    public static final String ALARM_TOOL = "skyeye.log.alarm.tool";
 
     /**
      * 默认报警途径为企业微信
