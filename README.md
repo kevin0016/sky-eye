@@ -75,6 +75,20 @@ skyeye.log.alarm.uri.elapsed = [{"uri":"/user/logTest","elapsed":2000}]
 skyeye.log.alarm.uri.elapsed.global = 1000
 skyeye.log.alarm.tool = wework
 ```
+###### 通知格式
+```
+error信息：这是个错误的信息
+ 服务名称：null
+ 服务器IP：192.168.199.191
+ 服务器hostname：localhost
+ 发生时间：2021-08-22 16:56:06
+ 请求类型：null
+ 跟踪traceId：null
+ 请求URI：null
+ 异常信息：这是个exception
+ 异常堆栈：
+ 这是个堆栈信息  
+```
 ###### 备注
 - 目前接口超时报警仅支持web,后期会同步支持部分的rpc框架
 - 目前仅支持apollo配置和钉钉报警，后期会开放配置接口，可自行选择配置，报警接口也会支持企业微信和飞书，并且开放通知接口，可自定接入报警
