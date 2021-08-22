@@ -115,4 +115,14 @@ public class SysConstant {
      */
     public static final String ALARM_METRIC_NAME_HELP = "skyeye异常报警数";
 
+    /**
+     * skyeye异常报警途径
+     */
+    public static final String ALARM_TOOL = "skyeye异常报警途径";
+
+    /**
+     * 默认报警途径为企业微信
+     */
+    public static final String ALARM_TOOL_DEFAULT = "wework";
+
 }

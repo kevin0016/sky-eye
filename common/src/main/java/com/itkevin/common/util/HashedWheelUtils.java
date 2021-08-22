@@ -144,7 +144,7 @@ public class HashedWheelUtils {
                 logCompressData.setAlarmCount(count);
                 Mono.fromRunnable(() -> {
                     try {
-                        NotifyMessageUtils.sendDingTalk(logCompressData);
+                        NotifyMessageUtils.getInstance().sendAlarmTalk(logCompressData);
                     } catch (Throwable e) {
                         log.warn("log skyeye >>> HashedWheelTask.handleHashedWheelData[{}] occur exception", businessType, e);
                     }
@@ -167,7 +167,7 @@ public class HashedWheelUtils {
                 logUriElapsedData.setMaxUriElapsedTraceId(LocalCacheUtils.getCache(hashedWheelData.getBusinessId()  + ElapsedUtils.MAX_URI_ELAPSED + ElapsedUtils.MAX_URI_ELAPSED_TRACEID));
                 Mono.fromRunnable(() -> {
                     try {
-                        NotifyMessageUtils.sendDingTalk(logUriElapsedData);
+                        NotifyMessageUtils.getInstance().sendAlarmTalk(logUriElapsedData);
                     } catch (Throwable e) {
                         log.warn("log skyeye >>> HashedWheelTask.handleHashedWheelData[{}] occur exception", businessType, e);
                     }

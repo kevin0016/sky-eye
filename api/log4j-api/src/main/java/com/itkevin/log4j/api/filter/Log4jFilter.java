@@ -49,7 +49,7 @@ public class Log4jFilter extends Filter {
                     logData.setOccurrenceTime(DateUtil.formatDateTime(new Date(event.getTimeStamp())));
                     logData.setFilter(LogUtils.filter(filterMessage));
                     // 发送消息
-                    NotifyMessageUtils.sendMessage(logData);
+                    NotifyMessageUtils.getInstance().sendMessage(logData);
                     // 异常报警上报
                     if (!logData.getFilter() && !SysConstant.WELCOME.equals(logData.getErrorMessage())) {
                         LocalCacheUtils.incr(SysConstant.ALARM_METRIC_NAME);

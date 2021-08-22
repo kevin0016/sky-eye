@@ -4,13 +4,14 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.HashUtil;
 import cn.hutool.json.JSONUtil;
 import com.itkevin.common.constants.SysConstant;
+import com.itkevin.common.enums.AlarmToolEnum;
 import com.itkevin.common.enums.BusinessTypeEnum;
 import com.itkevin.common.enums.LogConstantEnum;
 import com.itkevin.common.enums.MDCConstantEnum;
 import com.itkevin.common.enums.RequestTypeEnum;
 import com.itkevin.common.model.*;
+import com.itkevin.common.notice.NoticeInterface;
 import com.itkevin.common.notice.dingding.DingMarkDownMessage;
-import com.itkevin.common.notice.dingding.DingTalkNotice;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -31,18 +32,41 @@ public class NotifyMessageUtils {
      */
     private static ExecutorService executorService = new ThreadPoolExecutor(SysConstant.THREAD_NUM, SysConstant.MAX_THREAD_NUM, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(1), new ThreadPoolExecutor.DiscardPolicy());
 
+    private static NoticeInterface noticeInterface;
+
+    private static volatile NotifyMessageUtils notifyMessageUtils;
+
+    public static NotifyMessageUtils getInstance(){
+        try {
+            if(null == notifyMessageUtils){
+                synchronized (NotifyMessageUtils.class){
+                    if(null == notifyMessageUtils){
+                        String alarmTool = ConfigUtils.getProperty(SysConstant.ALARM_TOOL, SysConstant.ALARM_TOOL_DEFAULT);
+                        AlarmToolEnum alarmToolEnum = AlarmToolEnum.getByValue(alarmTool);
+                        Class enumName = alarmToolEnum.getName();
+                        noticeInterface = (NoticeInterface) enumName.newInstance();
+                        notifyMessageUtils = new NotifyMessageUtils();
+                    }
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return notifyMessageUtils;
+    }
+
     /**
      * 发送消息
      * @param logData
      */
-    public static void sendMessage(LogData logData) {
+    public void sendMessage(LogData logData) {
         Mono.fromRunnable(() -> {
             try {
                 // 报警间隔、报警次数
                 Integer alarmNotifyTime = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_TIME, SysConstant.ALARM_NOTIFY_TIME_DEFAULT);
                 Integer alarmNotifyCount = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_COUNT, SysConstant.ALARM_NOTIFY_COUNT_DEFAULT);
                 if (alarmNotifyTime == null || alarmNotifyCount == null || alarmNotifyTime == 0 || alarmNotifyCount == 0) {
-                    NotifyMessageUtils.sendDingTalk(logData);
+                    sendDingTalk(logData);
                 } else {
                     // 根据requestURI+exceptionMessage聚合，如果exceptionMessage为空则根据requestURI+errorMessage聚合
                     String requestURI = StringUtils.isNotBlank(logData.getRequestURI()) ? logData.getRequestURI().replaceAll("/\\d+", "/{PathVariable}") : "";
@@ -71,10 +95,10 @@ public class NotifyMessageUtils {
                                 businessData.setErrorMessage(errorMessage);
                                 HashedWheelUtils.putWheelQueue(new HashedWheelData(alarmNotifyTime, BusinessTypeEnum.NOTIFY.name(), hashCode, JSONUtil.toJsonStr(businessData)));
                             }
-                            NotifyMessageUtils.sendDingTalk(logData);
+                            sendDingTalk(logData);
                         }
                     } else {
-                        NotifyMessageUtils.sendDingTalk(logData);
+                        sendDingTalk(logData);
                     }
                 }
             } catch (Throwable e) {
@@ -89,7 +113,7 @@ public class NotifyMessageUtils {
      * @param exceptionMessage
      * @return
      */
-    private static boolean isFilterAggre(String errorMessage, String exceptionMessage) {
+    private boolean isFilterAggre(String errorMessage, String exceptionMessage) {
         String alarmAggreWhiteList = ConfigUtils.getProperty(SysConstant.ALARM_AGGRE_WHITE_LIST, null);
 
         return LogUtils.filter(errorMessage, alarmAggreWhiteList) || LogUtils.filter(exceptionMessage, alarmAggreWhiteList);
@@ -99,11 +123,17 @@ public class NotifyMessageUtils {
      * 发送钉钉
      * @param logData
      */
-    public static void sendDingTalk(LogData logData) {
+    public void sendDingTalk(LogData logData) {
         // 是否过滤日志数据
         if (logData.getFilter() != null && logData.getFilter()) {
             return;
         }
+        DingMarkDownMessage message = getDingMarkDownMessage(logData);
+        // 发送
+        noticeInterface.sendMessage(message);
+    }
+
+    private DingMarkDownMessage getDingMarkDownMessage(LogData logData) {
         String requestType = logData.getRequestType();
         DingMarkDownMessage message = new DingMarkDownMessage();
         message.setLevel(logData.getLevel());
@@ -140,8 +170,7 @@ public class NotifyMessageUtils {
         builder.append("+ ").append(MDCConstantEnum.EXCEPTION_STACKTRACE.getName()).append("：").append(System.getProperty("line.separator")).append(System.getProperty("line.separator")).append("`").append(logData.getExceptionStackTrace().replace("###", "-###")).append("`");
         builder = SysConstant.WELCOME.equals(logData.getErrorMessage()) ? getWelcomeContent(logData) : builder;
         message.setContent(builder.toString());
-        // 发送
-        DingTalkNotice.getInstance().sendMessage(message);
+        return message;
     }
 
     /**
@@ -149,7 +178,7 @@ public class NotifyMessageUtils {
      * @param logData
      * @return
      */
-    private static StringBuilder getWelcomeContent(LogData logData) {
+    private StringBuilder getWelcomeContent(LogData logData) {
         StringBuilder builder = new StringBuilder();
         builder.append("### **").append(logData.getErrorMessage()).append("**").append(System.getProperty("line.separator"));
         builder.append("+ ").append(MDCConstantEnum.SERVER_NAME.getName()).append("：").append(logData.getServerName()).append(System.getProperty("line.separator"));
@@ -167,7 +196,7 @@ public class NotifyMessageUtils {
      * 获取部署tag号
      * @return
      */
-    private static String getDeployTag() {
+    private String getDeployTag() {
         String deployTag = "";
         try {
             String path = System.getProperty("user.dir") + "/GIT_VERSION";
@@ -187,7 +216,7 @@ public class NotifyMessageUtils {
      * 发送钉钉
      * @param logCompressData
      */
-    public static void sendDingTalk(LogCompressData logCompressData) {
+    public void sendAlarmTalk(LogCompressData logCompressData) {
         DingMarkDownMessage message = new DingMarkDownMessage();
         message.setTitle(StringUtils.isNotBlank(logCompressData.getRequestURI()) ? logCompressData.getRequestURI() : "error");
         // 单独设置异常信息或error信息
@@ -206,14 +235,20 @@ public class NotifyMessageUtils {
                 "+ " + LogConstantEnum.SERVER_HOSTNAME.getName() + "：" + logCompressData.getServerHostname();
         message.setContent(builder);
         // 发送
-        DingTalkNotice.getInstance().sendMessage(message);
+        noticeInterface.sendMessage(message);
     }
 
     /**
      * 发送钉钉
      * @param logUriElapsedData
      */
-    public static void sendDingTalk(LogUriElapsedData logUriElapsedData) {
+    public void sendAlarmTalk(LogUriElapsedData logUriElapsedData) {
+        DingMarkDownMessage message = getDingMarkDownMessage(logUriElapsedData);
+        // 发送
+        noticeInterface.sendMessage(message);
+    }
+
+    private DingMarkDownMessage getDingMarkDownMessage(LogUriElapsedData logUriElapsedData) {
         DingMarkDownMessage message = new DingMarkDownMessage();
         message.setTitle("超时预警");
         String builder = "### **超时预警**" + System.getProperty("line.separator") +
@@ -228,8 +263,7 @@ public class NotifyMessageUtils {
                 "+ " + LogConstantEnum.SERVER_IP.getName() + "：" + logUriElapsedData.getServerIP() + System.getProperty("line.separator") +
                 "+ " + LogConstantEnum.SERVER_HOSTNAME.getName() + "：" + logUriElapsedData.getServerHostname();
         message.setContent(builder);
-        // 发送
-        DingTalkNotice.getInstance().sendMessage(message);
+        return message;
     }
 
 }
