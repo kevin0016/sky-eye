@@ -1,8 +1,7 @@
-package com.itkevin.common.notice.dingding;
+package com.itkevin.common.notice;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.itkevin.common.notice.MarkDownBaseMessage;
 import com.itkevin.common.notice.model.BaseMessage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +10,7 @@ import java.io.Serializable;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class DingMarkDownMessage extends MarkDownBaseMessage implements Serializable {
+public class MarkDownBaseMessage extends BaseMessage implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -33,7 +32,7 @@ public class DingMarkDownMessage extends MarkDownBaseMessage implements Serializ
     public String toString() {
         JSONObject markdownContent = new JSONObject();
         markdownContent.put("title", this.getTitle());
-        markdownContent.put("text", this.getContent());
+        markdownContent.put("content", this.getContent());
         JSONObject json = new JSONObject();
         json.put("msgtype", this.getMsgType());
         json.put("at", this.setAtAllAndMobile(this.getAtMobiles()));

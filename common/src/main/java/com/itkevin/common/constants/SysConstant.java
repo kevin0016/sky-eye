@@ -18,12 +18,12 @@ public class SysConstant {
     /**
      * 报警钉钉机器人配置（支持多个机器人）
      */
-    public static final String ALARM_DINGTALK = "skyeye.log.alarm.dingtalk";
+    public static final String ALARM_DINGTALK = "skyeye.log.alarm.talk.hook";
 
     /**
      * 报警钉钉严重错误机器人配置（支持多个机器人）
      */
-    public static final String ALARM_SERIOUS_DINGTALK = "skyeye.log.alarm.serious.dingtalk";
+    public static final String ALARM_SERIOUS_DINGTALK = "skyeye.log.alarm.serious.talk.hook";
 
     /**
      * 异常message输出默认长度

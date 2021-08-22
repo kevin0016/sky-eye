@@ -34,7 +34,7 @@ public class BaseMessage implements Serializable {
      * @param atMobiles 手机号
      * @return
      */
-    protected JSONObject setAtAllAndMobile(List<String> atMobiles) {
+    public JSONObject setAtAllAndMobile(List<String> atMobiles) {
         JSONObject atMobile = new JSONObject();
         if (!CollectionUtils.isEmpty(atMobiles)) {
             atMobile.put("atMobiles", atMobiles);

@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.BusinessTypeEnum;
 import com.itkevin.common.model.*;
+import com.itkevin.common.notice.NotifyMessageTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -50,7 +51,7 @@ public class HashedWheelUtils {
      * 将任务加入到时间轮
      * @param hashedWheelData
      */
-    protected static void putWheelQueue(HashedWheelData hashedWheelData) {
+    public static void putWheelQueue(HashedWheelData hashedWheelData) {
         // 任务模型
         TaskModel taskModel = new TaskModel();
         taskModel.setBusinessId(hashedWheelData.getBusinessId());
@@ -144,7 +145,7 @@ public class HashedWheelUtils {
                 logCompressData.setAlarmCount(count);
                 Mono.fromRunnable(() -> {
                     try {
-                        NotifyMessageUtils.getInstance().sendAlarmTalk(logCompressData);
+                        NotifyMessageTools.getInstance().sendAlarmTalk(logCompressData);
                     } catch (Throwable e) {
                         log.warn("log skyeye >>> HashedWheelTask.handleHashedWheelData[{}] occur exception", businessType, e);
                     }
@@ -167,7 +168,7 @@ public class HashedWheelUtils {
                 logUriElapsedData.setMaxUriElapsedTraceId(LocalCacheUtils.getCache(hashedWheelData.getBusinessId()  + ElapsedUtils.MAX_URI_ELAPSED + ElapsedUtils.MAX_URI_ELAPSED_TRACEID));
                 Mono.fromRunnable(() -> {
                     try {
-                        NotifyMessageUtils.getInstance().sendAlarmTalk(logUriElapsedData);
+                        NotifyMessageTools.getInstance().sendAlarmTalk(logUriElapsedData);
                     } catch (Throwable e) {
                         log.warn("log skyeye >>> HashedWheelTask.handleHashedWheelData[{}] occur exception", businessType, e);
                     }

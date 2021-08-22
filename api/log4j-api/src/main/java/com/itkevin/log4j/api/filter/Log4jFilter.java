@@ -8,7 +8,7 @@ import com.itkevin.common.model.LogData;
 import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.LogUtils;
-import com.itkevin.common.util.NotifyMessageUtils;
+import com.itkevin.common.notice.NotifyMessageTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.Level;
@@ -49,7 +49,7 @@ public class Log4jFilter extends Filter {
                     logData.setOccurrenceTime(DateUtil.formatDateTime(new Date(event.getTimeStamp())));
                     logData.setFilter(LogUtils.filter(filterMessage));
                     // 发送消息
-                    NotifyMessageUtils.getInstance().sendMessage(logData);
+                    NotifyMessageTools.getInstance().sendMessage(logData);
                     // 异常报警上报
                     if (!logData.getFilter() && !SysConstant.WELCOME.equals(logData.getErrorMessage())) {
                         LocalCacheUtils.incr(SysConstant.ALARM_METRIC_NAME);

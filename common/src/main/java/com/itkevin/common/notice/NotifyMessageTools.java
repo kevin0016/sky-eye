@@ -1,5 +1,6 @@
-package com.itkevin.common.util;
+package com.itkevin.common.notice;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.HashUtil;
 import cn.hutool.json.JSONUtil;
@@ -7,17 +8,23 @@ import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.AlarmToolEnum;
 import com.itkevin.common.enums.BusinessTypeEnum;
 import com.itkevin.common.enums.LogConstantEnum;
+import com.itkevin.common.enums.LogTypeEnum;
 import com.itkevin.common.enums.MDCConstantEnum;
 import com.itkevin.common.enums.RequestTypeEnum;
 import com.itkevin.common.model.*;
-import com.itkevin.common.notice.NoticeInterface;
 import com.itkevin.common.notice.dingding.DingMarkDownMessage;
+import com.itkevin.common.util.CommonConverter;
+import com.itkevin.common.util.ConfigUtils;
+import com.itkevin.common.util.HashedWheelUtils;
+import com.itkevin.common.util.LocalCacheUtils;
+import com.itkevin.common.util.LogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,7 +32,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-public class NotifyMessageUtils {
+public class NotifyMessageTools {
 
     /**
      * 发送单条报警-指定线程池
@@ -34,25 +41,25 @@ public class NotifyMessageUtils {
 
     private static NoticeInterface noticeInterface;
 
-    private static volatile NotifyMessageUtils notifyMessageUtils;
+    private static volatile NotifyMessageTools notifyMessageTools;
 
-    public static NotifyMessageUtils getInstance(){
+    public static NotifyMessageTools getInstance(){
         try {
-            if(null == notifyMessageUtils){
-                synchronized (NotifyMessageUtils.class){
-                    if(null == notifyMessageUtils){
+            if(null == notifyMessageTools){
+                synchronized (NotifyMessageTools.class){
+                    if(null == notifyMessageTools){
                         String alarmTool = ConfigUtils.getProperty(SysConstant.ALARM_TOOL, SysConstant.ALARM_TOOL_DEFAULT);
                         AlarmToolEnum alarmToolEnum = AlarmToolEnum.getByValue(alarmTool);
                         Class enumName = alarmToolEnum.getName();
                         noticeInterface = (NoticeInterface) enumName.newInstance();
-                        notifyMessageUtils = new NotifyMessageUtils();
+                        notifyMessageTools = new NotifyMessageTools();
                     }
                 }
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return notifyMessageUtils;
+        return notifyMessageTools;
     }
 
     /**
@@ -66,7 +73,7 @@ public class NotifyMessageUtils {
                 Integer alarmNotifyTime = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_TIME, SysConstant.ALARM_NOTIFY_TIME_DEFAULT);
                 Integer alarmNotifyCount = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_COUNT, SysConstant.ALARM_NOTIFY_COUNT_DEFAULT);
                 if (alarmNotifyTime == null || alarmNotifyCount == null || alarmNotifyTime == 0 || alarmNotifyCount == 0) {
-                    sendDingTalk(logData);
+                    sendMsgTalk(logData);
                 } else {
                     // 根据requestURI+exceptionMessage聚合，如果exceptionMessage为空则根据requestURI+errorMessage聚合
                     String requestURI = StringUtils.isNotBlank(logData.getRequestURI()) ? logData.getRequestURI().replaceAll("/\\d+", "/{PathVariable}") : "";
@@ -95,10 +102,10 @@ public class NotifyMessageUtils {
                                 businessData.setErrorMessage(errorMessage);
                                 HashedWheelUtils.putWheelQueue(new HashedWheelData(alarmNotifyTime, BusinessTypeEnum.NOTIFY.name(), hashCode, JSONUtil.toJsonStr(businessData)));
                             }
-                            sendDingTalk(logData);
+                            sendMsgTalk(logData);
                         }
                     } else {
-                        sendDingTalk(logData);
+                        sendMsgTalk(logData);
                     }
                 }
             } catch (Throwable e) {
@@ -123,34 +130,34 @@ public class NotifyMessageUtils {
      * 发送钉钉
      * @param logData
      */
-    public void sendDingTalk(LogData logData) {
+    public void sendMsgTalk(LogData logData) {
         // 是否过滤日志数据
         if (logData.getFilter() != null && logData.getFilter()) {
             return;
         }
-        DingMarkDownMessage message = getDingMarkDownMessage(logData);
+        MarkDownBaseMessage message = getMarkDownMessage(logData);
         // 发送
         noticeInterface.sendMessage(message);
     }
 
-    private DingMarkDownMessage getDingMarkDownMessage(LogData logData) {
+    private MarkDownBaseMessage getMarkDownMessage(LogData logData) {
         String requestType = logData.getRequestType();
-        DingMarkDownMessage message = new DingMarkDownMessage();
+        MarkDownBaseMessage message = new MarkDownBaseMessage();
         message.setLevel(logData.getLevel());
         message.setTitle(StringUtils.isNotBlank(logData.getErrorMessage()) ? logData.getErrorMessage() : "error");
         StringBuilder builder = new StringBuilder();
         builder.append("### **").append(MDCConstantEnum.ERROR_MESSAGE.getName()).append("：").append(logData.getErrorMessage().replaceAll(System.getProperty("line.separator"), " ").replaceAll("\n", " ")).append("**").append(System.getProperty("line.separator"));
-        builder.append("+ ").append(MDCConstantEnum.SERVER_NAME.getName()).append("：").append(logData.getServerName()).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.SERVER_NAME.getName()).append("：").append(logData.getServerName()).append(System.getProperty("line.separator"));
         if (requestType != null && requestType.toLowerCase().contains(RequestTypeEnum.HTTP.name().toLowerCase())
                 || RequestTypeEnum.DUBBO.name().equalsIgnoreCase(requestType)) {
-            builder.append("+ ").append(MDCConstantEnum.SOURCE_IP.getName()).append("：").append(logData.getSourceIP()).append(System.getProperty("line.separator"));
+            builder.append(" ").append(MDCConstantEnum.SOURCE_IP.getName()).append("：").append(logData.getSourceIP()).append(System.getProperty("line.separator"));
         }
-        builder.append("+ ").append(MDCConstantEnum.SERVER_IP.getName()).append("：").append(logData.getServerIP()).append(System.getProperty("line.separator"));
-        builder.append("+ ").append(MDCConstantEnum.SERVER_HOSTNAME.getName()).append("：").append(logData.getServerHostname()).append(System.getProperty("line.separator"));
-        builder.append("+ ").append(MDCConstantEnum.OCCURRENCE_TIME.getName()).append("：").append(logData.getOccurrenceTime()).append(System.getProperty("line.separator"));
-        builder.append("+ ").append(MDCConstantEnum.REQUEST_TYPE.getName()).append("：").append(logData.getRequestType()).append(System.getProperty("line.separator"));
-        builder.append("+ ").append(MDCConstantEnum.TRACE_ID.getName()).append("：").append(logData.getTraceId()).append(System.getProperty("line.separator"));
-        builder.append("+ ").append(MDCConstantEnum.REQUEST_URI.getName()).append("：").append(logData.getRequestURI()).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.SERVER_IP.getName()).append("：").append(logData.getServerIP()).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.SERVER_HOSTNAME.getName()).append("：").append(logData.getServerHostname()).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.OCCURRENCE_TIME.getName()).append("：").append(logData.getOccurrenceTime()).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.REQUEST_TYPE.getName()).append("：").append(logData.getRequestType()).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.TRACE_ID.getName()).append("：").append(logData.getTraceId()).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.REQUEST_URI.getName()).append("：").append(logData.getRequestURI()).append(System.getProperty("line.separator"));
         if (requestType != null && requestType.toLowerCase().contains(RequestTypeEnum.HTTP.name().toLowerCase())
                 || RequestTypeEnum.DUBBO.name().equalsIgnoreCase(requestType)
                 || RequestTypeEnum.JOB.name().equalsIgnoreCase(requestType)) {
@@ -166,8 +173,8 @@ public class NotifyMessageUtils {
             builder.append("+ ").append(MDCConstantEnum.EVENT_PAYLOAD.getName()).append("：").append(logData.getEventPayload()).append(System.getProperty("line.separator"));
         }
         String exceptionMessage = StringUtils.isNotBlank(logData.getExceptionMessage()) ? logData.getExceptionMessage().replaceAll(System.getProperty("line.separator"), " ").replaceAll("\n", " ") : "";
-        builder.append("+ ").append(MDCConstantEnum.EXCEPTION_MESSAGE.getName()).append("：").append(exceptionMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? exceptionMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT)+"..." : exceptionMessage).append(System.getProperty("line.separator"));
-        builder.append("+ ").append(MDCConstantEnum.EXCEPTION_STACKTRACE.getName()).append("：").append(System.getProperty("line.separator")).append(System.getProperty("line.separator")).append("`").append(logData.getExceptionStackTrace().replace("###", "-###")).append("`");
+        builder.append(" ").append(MDCConstantEnum.EXCEPTION_MESSAGE.getName()).append("：").append(exceptionMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? exceptionMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT)+"..." : exceptionMessage).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.EXCEPTION_STACKTRACE.getName()).append("：").append(System.getProperty("line.separator")).append(System.getProperty("line.separator")).append("`").append(logData.getExceptionStackTrace().replace("###", "-###")).append("`");
         builder = SysConstant.WELCOME.equals(logData.getErrorMessage()) ? getWelcomeContent(logData) : builder;
         message.setContent(builder.toString());
         return message;
@@ -264,6 +271,35 @@ public class NotifyMessageUtils {
                 "+ " + LogConstantEnum.SERVER_HOSTNAME.getName() + "：" + logUriElapsedData.getServerHostname();
         message.setContent(builder);
         return message;
+    }
+
+
+    public static void main(String[] args) {
+        ConfigUtils.saveProperty(SysConstant.ALARM_DINGTALK,"[ { \"webHook\": \"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b90b1e53-f75c-42dc-8636-e3d69a9c78f4\"} ]");
+        ConfigUtils.saveProperty(SysConstant.ALARM_ENABLED,"true");
+        ConfigUtils.saveProperty(SysConstant.ALARM_SERIOUS_DINGTALK,"[ { \"webHook\": \"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b90b1e53-f75c-42dc-8636-e3d69a9c78f4\"} ]");
+        ConfigUtils.saveProperty(SysConstant.ALARM_STACKNUM,"10");
+        ConfigUtils.saveProperty(SysConstant.ALARM_WHITE_LIST,"");
+        ConfigUtils.saveProperty(SysConstant.ALARM_AGGRE_WHITE_LIST,"");
+        ConfigUtils.saveProperty(SysConstant.ALARM_NOTIFY_TIME,"1");
+        ConfigUtils.saveProperty(SysConstant.ALARM_NOTIFY_COUNT,"1");
+        String msg = "这是个错误的信息";
+        String message = "这是个exception";
+        String stackTrace = "这是个堆栈信息";
+        // 过滤信息
+        FilterMessage filterMessage = new FilterMessage();
+        filterMessage.setLogType(LogTypeEnum.LOG4J.name());
+        filterMessage.setMsg(msg);
+        filterMessage.setMessage(message);
+        filterMessage.setStackTrace(stackTrace);
+        LogData logData = LogUtils.obtainLogData(LogTypeEnum.LOG4J.name(), msg, message, stackTrace);
+        logData.setOccurrenceTime(DateUtil.formatDateTime(new Date()));
+        logData.setFilter(LogUtils.filter(filterMessage));
+        // 发送消息
+        NotifyMessageTools.getInstance().sendMessage(logData);
+        while (true){
+
+        }
     }
 
 }

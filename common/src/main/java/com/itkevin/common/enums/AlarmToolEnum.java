@@ -12,6 +12,7 @@ public enum AlarmToolEnum {
     DINGDING("dingding", DingTalkNotice.class);
 
     private String code;
+
     private Class<NoticeInterface> name;
 
     public String getCode() {

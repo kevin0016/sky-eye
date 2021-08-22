@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
 import com.itkevin.common.notice.AbstractNotice;
+import com.itkevin.common.notice.MarkDownBaseMessage;
 import com.itkevin.common.notice.model.BaseMessage;
 import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
@@ -34,16 +35,16 @@ public class DingTalkNotice extends AbstractNotice {
 
     private static volatile DingTalkNotice dingTalkNotice;
 
-    public static DingTalkNotice getInstance(){
+    public static DingTalkNotice getInstance() {
         try {
-            if(null == dingTalkNotice){
-                synchronized (DingTalkNotice.class){
-                    if(null == dingTalkNotice){
+            if (null == dingTalkNotice) {
+                synchronized (DingTalkNotice.class) {
+                    if (null == dingTalkNotice) {
                         dingTalkNotice = new DingTalkNotice();
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return dingTalkNotice;
@@ -68,12 +69,13 @@ public class DingTalkNotice extends AbstractNotice {
 
     /**
      * 发送钉钉消息
-     * @param dingMessage
+     *
+     * @param dingMarkDownMessage
      */
     @Override
-    public void sendMessage(BaseMessage dingMessage) {
+    public void sendMessage(MarkDownBaseMessage dingMarkDownMessage) {
         try {
-            String level = dingMessage.getLevel();
+            String level = dingMarkDownMessage.getLevel();
             String alarmDingTalk = StringUtils.isNotBlank(level) && level.equals(LogLevelEnum.SERIOUS.name())
                     ? ConfigUtils.getProperty(SysConstant.ALARM_SERIOUS_DINGTALK, "")
                     : ConfigUtils.getProperty(SysConstant.ALARM_DINGTALK, "");
@@ -82,14 +84,27 @@ public class DingTalkNotice extends AbstractNotice {
                 return;
             }
             List<DingConfigData> dingConfigDataList = JSONUtil.toList(JSONUtil.parseArray(alarmDingTalk), DingConfigData.class);
-            send(dingConfigDataList, dingMessage.toString());
+            String str = converMarkDownDingMessage2Str(dingMarkDownMessage);
+            send(dingConfigDataList, str);
         } catch (Exception e) {
             log.warn("log skyeye >>> DingTalkUtils.sendMessage occur exception", e);
         }
     }
 
+    private String converMarkDownDingMessage2Str(MarkDownBaseMessage markDownBaseMessage) {
+        JSONObject markdownContent = new JSONObject();
+        markdownContent.put("title", markDownBaseMessage.getTitle());
+        markdownContent.put("text", markDownBaseMessage.getContent());
+        JSONObject json = new JSONObject();
+        json.put("msgtype", markDownBaseMessage.getMsgType());
+        json.put("at", markDownBaseMessage.setAtAllAndMobile(markDownBaseMessage.getAtMobiles()));
+        json.put("markdown", markdownContent);
+        return JSONUtil.toJsonStr(json);
+    }
+
     /**
      * 发送
+     *
      * @param dingConfigDataList
      * @param jsonContent
      */
@@ -107,6 +122,7 @@ public class DingTalkNotice extends AbstractNotice {
 
     /**
      * 发送
+     *
      * @param accessToken
      * @param secret
      * @param jsonContent
@@ -137,6 +153,7 @@ public class DingTalkNotice extends AbstractNotice {
 
     /**
      * 验签
+     *
      * @param timestamp
      * @param secret
      * @return
@@ -155,9 +172,9 @@ public class DingTalkNotice extends AbstractNotice {
     }
 
 
-
     /**
      * 获取第几个机器人
+     *
      * @param totalCount
      * @return
      */

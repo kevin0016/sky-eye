@@ -7,6 +7,7 @@ import cn.hutool.json.JSONUtil;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
 import com.itkevin.common.notice.AbstractNotice;
+import com.itkevin.common.notice.MarkDownBaseMessage;
 import com.itkevin.common.notice.model.BaseMessage;
 import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
@@ -68,12 +69,12 @@ public class WorkWeiXinTalkNotice extends AbstractNotice {
 
     /**
      * 发送钉钉消息
-     * @param dingMessage
+     * @param markDownBaseMessage
      */
     @Override
-    public void sendMessage(BaseMessage dingMessage) {
+    public void sendMessage(MarkDownBaseMessage markDownBaseMessage) {
         try {
-            String level = dingMessage.getLevel();
+            String level = markDownBaseMessage.getLevel();
             String alarmDingTalk = StringUtils.isNotBlank(level) && level.equals(LogLevelEnum.SERIOUS.name())
                     ? ConfigUtils.getProperty(SysConstant.ALARM_SERIOUS_DINGTALK, "")
                     : ConfigUtils.getProperty(SysConstant.ALARM_DINGTALK, "");
@@ -82,10 +83,22 @@ public class WorkWeiXinTalkNotice extends AbstractNotice {
                 return;
             }
             List<WeWorkConfigData> weWorkConfigDataList = JSONUtil.toList(JSONUtil.parseArray(alarmDingTalk), WeWorkConfigData.class);
-            send(weWorkConfigDataList, dingMessage.toString());
+           String str = converMarkDownBaseMessage2Str(markDownBaseMessage);
+            send(weWorkConfigDataList, str);
         } catch (Exception e) {
             log.warn("log skyeye >>> WeWorkTalkUtils.sendMessage occur exception", e);
         }
+    }
+
+    private String converMarkDownBaseMessage2Str(MarkDownBaseMessage markDownBaseMessage) {
+        JSONObject markdownContent = new JSONObject();
+        markdownContent.put("title", markDownBaseMessage.getTitle());
+        markdownContent.put("content", markDownBaseMessage.getContent());
+        markdownContent.put("mentioned_list", markDownBaseMessage.getAtMobiles());
+        JSONObject json = new JSONObject();
+        json.put("msgtype", markDownBaseMessage.getMsgType());
+        json.put("markdown", markdownContent);
+        return JSONUtil.toJsonStr(json);
     }
 
 
