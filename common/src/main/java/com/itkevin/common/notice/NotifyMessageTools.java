@@ -76,7 +76,7 @@ public class NotifyMessageTools {
                     sendMsgTalk(logData);
                 } else {
                     // 根据requestURI+exceptionMessage聚合，如果exceptionMessage为空则根据requestURI+errorMessage聚合
-                    String requestURI = StringUtils.isNotBlank(logData.getRequestURI()) ? logData.getRequestURI().replaceAll("/\\d+", "/{PathVariable}") : "";
+                    String requestURI = StringUtils.isNotBlank(logData.getRequestURI()) ? logData.getRequestURI().replaceAll("/\\d+", "/{PathVariable}") : "default";
                     String exceptionMessage = "";
                     if (StringUtils.isNotBlank(logData.getExceptionMessage())) {
                         String exceMessage = logData.getExceptionMessage();
