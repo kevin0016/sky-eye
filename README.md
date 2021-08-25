@@ -52,9 +52,9 @@ sky-eye的主要特性：
 # 是否启动报警
 skyeye.log.alarm.enabled = true
 # 报警钉钉严重错误机器人配置（支持多个机器人）
-skyeye.log.alarm.serious.dingtalk = [ { "webHook": "https://oapi.dingtalk.com/robot/send?access_token=xxxxx", "secret": "xxxx" } ]
+skyeye.log.alarm.serious.talk.hook = [ { "webHook": "https://oapi.dingtalk.com/robot/send?access_token=xxxxx", "secret": "xxxx" } ]
 # 报警钉钉机器人配置（支持多个机器人）
-skyeye.log.alarm.dingtalk = [ { "webHook": "https://oapi.dingtalk.com/robot/send?access_token=xxx", "secret": "xxxx" } ]
+skyeye.log.alarm.talk.hook = [ { "webHook": "https://oapi.dingtalk.com/robot/send?access_token=xxx", "secret": "xxxx" } ]
 # 堆栈行数配置
 skyeye.log.alarm.stackNum = 10
 # 单条报警白名单
