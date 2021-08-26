@@ -21,7 +21,7 @@ sky-eye的主要特性：
 
 ### 快速接入
 
-###### 1、引入包
+#### 1、引入包
 ```xml
 <!--log4j版本-->
 <dependency>
@@ -38,7 +38,7 @@ sky-eye的主要特性：
 </dependency>
 ```
 
-###### 2、设置设置启动参数
+#### 2、设置设置启动参数
 ```java
 // log4j
     com.itkevin.log4j.api.listener.Log4jApplicationListener
@@ -46,7 +46,7 @@ sky-eye的主要特性：
     com.itkevin.logback.api.listener.LogbackApplicationListener
 // 以上两个类交由spring 管理
 ```
-###### 3、apollo配置参数
+#### 3、apollo配置参数
 首先需要创建对应的namespace名称为：skyeye
 ```properties
 # 是否启动报警
@@ -75,7 +75,7 @@ skyeye.log.alarm.uri.elapsed = [{"uri":"/user/logTest","elapsed":2000}]
 skyeye.log.alarm.uri.elapsed.global = 1000
 skyeye.log.alarm.tool = wework
 ```
-###### 通知格式
+#### 通知格式
 ```
 error信息：这是个错误的信息
  服务名称：null
@@ -89,7 +89,13 @@ error信息：这是个错误的信息
  异常堆栈：
  这是个堆栈信息  
 ```
-###### 备注
+#### 自定义通知接入方法
+- 1、继承`com.itkevin.common.notice.AbstractNotice`类，实现`com.itkevin.common.notice.NoticeInterface#sendMessage`和`com.itkevin.common.notice.NoticeInterface#filterFlag`两个方法
+- 2、在apollo上配置`skyeye.log.alarm.tool`属性，属性值设置为`com.itkevin.common.notice.NoticeInterface#filterFlag`方法的返回值
+- 备注：目前`com.itkevin.common.notice.NoticeInterface#sendMessage`中暂时只支持markdown格式，后期会开放自定义格式
+
+
+#### 备注
 - 目前接口超时报警仅支持web,后期会同步支持部分的rpc框架
 - 目前仅支持apollo配置和钉钉报警，后期会开放配置接口，可自行选择配置，报警接口也会支持企业微信和飞书，并且开放通知接口，可自定接入报警
 

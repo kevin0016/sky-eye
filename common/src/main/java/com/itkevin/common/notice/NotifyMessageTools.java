@@ -13,6 +13,7 @@ import com.itkevin.common.enums.MDCConstantEnum;
 import com.itkevin.common.enums.RequestTypeEnum;
 import com.itkevin.common.model.*;
 import com.itkevin.common.notice.dingding.DingMarkDownMessage;
+import com.itkevin.common.notice.workwx.WorkWeiXinTalkNotice;
 import com.itkevin.common.util.CommonConverter;
 import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.HashedWheelUtils;
@@ -26,6 +27,8 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -49,9 +52,15 @@ public class NotifyMessageTools {
                 synchronized (NotifyMessageTools.class){
                     if(null == notifyMessageTools){
                         String alarmTool = ConfigUtils.getProperty(SysConstant.ALARM_TOOL, SysConstant.ALARM_TOOL_DEFAULT);
-                        AlarmToolEnum alarmToolEnum = AlarmToolEnum.getByValue(alarmTool);
-                        Class enumName = alarmToolEnum.getName();
-                        noticeInterface = (NoticeInterface) enumName.newInstance();
+                        ServiceLoader<NoticeInterface> serviceLoader = ServiceLoader.load(NoticeInterface.class);
+                        for (NoticeInterface noticeInterfaceLoop : serviceLoader){
+                            if(alarmTool.equals(noticeInterfaceLoop.filterFlag())){
+                                noticeInterface = noticeInterfaceLoop;
+                            }
+                        }
+                        if(Objects.isNull(noticeInterface)){
+                            noticeInterface = WorkWeiXinTalkNotice.getInstance();
+                        }
                         notifyMessageTools = new NotifyMessageTools();
                     }
                 }
