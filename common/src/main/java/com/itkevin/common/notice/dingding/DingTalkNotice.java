@@ -8,7 +8,6 @@ import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
 import com.itkevin.common.notice.AbstractNotice;
 import com.itkevin.common.notice.MarkDownBaseMessage;
-import com.itkevin.common.notice.model.BaseMessage;
 import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.StringConverterFactory;
@@ -224,5 +223,10 @@ public class DingTalkNotice extends AbstractNotice {
 //                "`" + exceptionStackTrace + "`";
 //        message.setContent(content);
 //        DingTalkNotice.sendMessage(message);
+    }
+
+    @Override
+    public String filterFlag() {
+        return "dingding";
     }
 }

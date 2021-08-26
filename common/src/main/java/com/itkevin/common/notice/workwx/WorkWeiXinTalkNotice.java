@@ -160,4 +160,8 @@ public class WorkWeiXinTalkNotice extends AbstractNotice {
         return currentIndex;
     }
 
+    @Override
+    public String filterFlag() {
+        return "wework";
+    }
 }
