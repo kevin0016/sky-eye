@@ -20,19 +20,6 @@ import javax.servlet.Filter;
 public class Log4jConfig {
 
     @Bean
-    public Filter logWebFilter() {
-        return new LogWebFilter();
-    }
-
-    @Bean
-    public FilterRegistrationBean logWebFilterBean() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(logWebFilter());
-        registration.addUrlPatterns("/*");
-        return registration;
-    }
-
-    @Bean
     @ConditionalOnMissingBean
     public Log4jApplicationListener logbackApplicationListener() {
         return new Log4jApplicationListener();
