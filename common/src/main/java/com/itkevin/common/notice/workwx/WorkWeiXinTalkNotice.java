@@ -5,10 +5,9 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.itkevin.common.config.SysConfig;
-import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
-import com.itkevin.common.notice.AbstractNotice;
 import com.itkevin.common.notice.MarkDownBaseMessage;
+import com.itkevin.common.notice.NoticeInterface;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.StringConverterFactory;
 import com.jakewharton.retrofit2.adapter.reactor.ReactorCallAdapterFactory;
@@ -26,9 +25,9 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class WorkWeiXinTalkNotice extends AbstractNotice {
+public class WorkWeiXinTalkNotice implements NoticeInterface {
     /**
-     * 钉钉机器人标识
+     * 机器人标识
      */
     private static final String WEBHOOK_INDEX = "WEWORK_WEBHOOK_INDEX";
 
@@ -55,11 +54,11 @@ public class WorkWeiXinTalkNotice extends AbstractNotice {
     }
 
     /**
-     * 钉钉服务接口（retrofit2-reactor-adapter：https://github.com/JakeWharton/retrofit2-reactor-adapter）
+     * 服务接口（retrofit2-reactor-adapter：https://github.com/JakeWharton/retrofit2-reactor-adapter）
      */
     private static WorkWeiXinTalkService workWeiXinTalkService = new Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(initOkHttpClient())
+            .client(NoticeInterface.initOkHttpClient())
             .addConverterFactory(new StringConverterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(ReactorCallAdapterFactory.create())
@@ -67,7 +66,7 @@ public class WorkWeiXinTalkNotice extends AbstractNotice {
             .create(WorkWeiXinTalkService.class);
 
     /**
-     * 发送钉钉消息
+     * 发送消息
      * @param markDownBaseMessage
      */
     @Override

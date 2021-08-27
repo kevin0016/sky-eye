@@ -5,10 +5,9 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.itkevin.common.config.SysConfig;
-import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
-import com.itkevin.common.notice.AbstractNotice;
 import com.itkevin.common.notice.MarkDownBaseMessage;
+import com.itkevin.common.notice.NoticeInterface;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.StringConverterFactory;
 import com.jakewharton.retrofit2.adapter.reactor.ReactorCallAdapterFactory;
@@ -30,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 @Slf4j
-public class DingTalkNotice extends AbstractNotice {
+public class DingTalkNotice implements NoticeInterface {
 
     private static volatile DingTalkNotice dingTalkNotice;
 
@@ -54,7 +53,7 @@ public class DingTalkNotice extends AbstractNotice {
      */
     private static DingTalkService dingTalkService = new Retrofit.Builder()
             .baseUrl("https://oapi.dingtalk.com")
-            .client(initOkHttpClient())
+            .client(NoticeInterface.initOkHttpClient())
             .addConverterFactory(new StringConverterFactory())
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(ReactorCallAdapterFactory.create())

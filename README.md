@@ -93,7 +93,7 @@ error信息：这是个错误的信息
  这是个堆栈信息  
 ```
 #### 5、自定义通知接入方法
-- 1、继承`com.itkevin.common.notice.AbstractNotice`类，实现`com.itkevin.common.notice.NoticeInterface#sendMessage`和`com.itkevin.common.notice.NoticeInterface#filterFlag`两个方法
+- 1、实现`com.itkevin.common.notice.NoticeInterfacee`类，实现`com.itkevin.common.notice.NoticeInterface#sendMessage`和`com.itkevin.common.notice.NoticeInterface#filterFlag`两个方法
 - 2、在apollo上配置`skyeye.log.alarm.tool`属性，属性值设置为`com.itkevin.common.notice.NoticeInterface#filterFlag`方法的返回值
 - 3、在resources目录下创建META-INF.services文件夹创建名为`com.itkevin.common.notice.NoticeInterface`的文件，并将自己的实现类全路径写到这个文件中
 - 备注：目前`com.itkevin.common.notice.NoticeInterface#sendMessage`中暂时只支持markdown格式，后期会开放自定义格式
