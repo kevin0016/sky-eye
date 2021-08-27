@@ -44,7 +44,7 @@ sky-eye的主要特性：
     com.itkevin.log4j.api.listener.Log4jApplicationListener
 // logback
     com.itkevin.logback.api.listener.LogbackApplicationListener
-// 以上两个类交由spring 管理
+// 以上两个类交由spring管理,springboot项目通过自动配置的方式默认管理，不用其余配置
 ```
 #### 3、apollo配置参数
 首先需要创建对应的namespace名称为：skyeye
