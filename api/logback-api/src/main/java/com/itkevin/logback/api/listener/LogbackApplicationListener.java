@@ -6,9 +6,13 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.filter.Filter;
 import com.ctrip.framework.apollo.Config;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.itkevin.common.config.ConfigTool;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.listener.ConfigListener;
-import com.itkevin.common.util.ConfigUtils;
+import com.itkevin.common.notice.NoticeInterface;
 import com.itkevin.common.util.HashedWheelTask;
 import com.itkevin.logback.api.filter.LogbackFilter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +22,13 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.Set;
 
 /**
@@ -29,17 +39,17 @@ public class LogbackApplicationListener implements ApplicationListener<ContextRe
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        ApplicationContext applicationContext = event.getApplicationContext();
-        // 添加apollo配置监听器，获取apollo配置放入缓存
-        Config config = ConfigUtils.getConfig();
-        config.addChangeListener(new ConfigListener());
-        Set<String> propertyNames = config.getPropertyNames();
-        if (!CollectionUtils.isEmpty(propertyNames)) {
-            propertyNames.forEach(propertyName -> {
-                String propertyValue = config.getProperty(propertyName, null);
-                ConfigUtils.saveProperty(propertyName, propertyValue);
-            });
+        // 配置放入缓存
+        ServiceLoader<ConfigTool> serviceLoader = ServiceLoader.load(ConfigTool.class);
+        List<ConfigTool> configTools = Lists.newArrayList();
+        for (ConfigTool configTool : serviceLoader) {
+            configTools.add(configTool);
         }
+        configTools.stream().max(Comparator.comparing(ConfigTool::sortFlag)).ifPresent(configTool -> {
+            Map<String, String> map = configTool.getConfig();
+            SysConfig.convertMap2SysConfig(map);
+        });
+
         // 设置log filter，初始化动作
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = context.getLogger(Logger.ROOT_LOGGER_NAME);

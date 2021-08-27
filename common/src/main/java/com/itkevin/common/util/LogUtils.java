@@ -1,6 +1,7 @@
 package com.itkevin.common.util;
 
 import com.ctrip.framework.foundation.Foundation;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
 import com.itkevin.common.enums.MDCConstantEnum;
@@ -32,7 +33,7 @@ public class LogUtils {
                 return true;
         }
         // 获取配置
-        String alarmWhiteList = ConfigUtils.getProperty(SysConstant.ALARM_WHITE_LIST, null);
+        String alarmWhiteList = SysConfig.instance.getAlarmWhiteList();
 
         return filter(msg, alarmWhiteList) || filter(message, alarmWhiteList) || filter(stackTrace, alarmWhiteList);
     }
@@ -48,8 +49,7 @@ public class LogUtils {
      */
     public static LogData obtainLogData(String logType, String msg, String message, String stackTrace) {
         // 获取配置
-        String stackNumStr = ConfigUtils.getProperty(SysConstant.ALARM_STACKNUM, null);
-        int stackNum = StringUtils.isNotBlank(stackNumStr) ? Integer.parseInt(stackNumStr.trim()) : SysConstant.ALARM_STACKNUM_DEFAULT;
+        int stackNum = SysConfig.instance.getAlarmStacknum();
         // logData
         LogData logData = new LogData();
         logData.setLevel(getLogLevel(msg));

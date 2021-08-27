@@ -4,6 +4,8 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.HashUtil;
 import cn.hutool.json.JSONUtil;
+import com.google.common.collect.Maps;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.AlarmToolEnum;
 import com.itkevin.common.enums.BusinessTypeEnum;
@@ -15,7 +17,6 @@ import com.itkevin.common.model.*;
 import com.itkevin.common.notice.dingding.DingMarkDownMessage;
 import com.itkevin.common.notice.workwx.WorkWeiXinTalkNotice;
 import com.itkevin.common.util.CommonConverter;
-import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.HashedWheelUtils;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.LogUtils;
@@ -26,7 +27,9 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.concurrent.ExecutorService;
@@ -46,26 +49,26 @@ public class NotifyMessageTools {
 
     private static volatile NotifyMessageTools notifyMessageTools;
 
-    public static NotifyMessageTools getInstance(){
+    public static NotifyMessageTools getInstance() {
         try {
-            if(null == notifyMessageTools){
-                synchronized (NotifyMessageTools.class){
-                    if(null == notifyMessageTools){
-                        String alarmTool = ConfigUtils.getProperty(SysConstant.ALARM_TOOL, SysConstant.ALARM_TOOL_DEFAULT);
+            if (null == notifyMessageTools) {
+                synchronized (NotifyMessageTools.class) {
+                    if (null == notifyMessageTools) {
+                        String alarmTool = SysConfig.instance.getAlarmTool();
                         ServiceLoader<NoticeInterface> serviceLoader = ServiceLoader.load(NoticeInterface.class);
-                        for (NoticeInterface noticeInterfaceLoop : serviceLoader){
-                            if(alarmTool.equals(noticeInterfaceLoop.filterFlag())){
+                        for (NoticeInterface noticeInterfaceLoop : serviceLoader) {
+                            if (alarmTool.equals(noticeInterfaceLoop.filterFlag())) {
                                 noticeInterface = noticeInterfaceLoop;
                             }
                         }
-                        if(Objects.isNull(noticeInterface)){
+                        if (Objects.isNull(noticeInterface)) {
                             noticeInterface = WorkWeiXinTalkNotice.getInstance();
                         }
                         notifyMessageTools = new NotifyMessageTools();
                     }
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return notifyMessageTools;
@@ -73,14 +76,15 @@ public class NotifyMessageTools {
 
     /**
      * 发送消息
+     *
      * @param logData
      */
     public void sendMessage(LogData logData) {
         Mono.fromRunnable(() -> {
             try {
                 // 报警间隔、报警次数
-                Integer alarmNotifyTime = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_TIME, SysConstant.ALARM_NOTIFY_TIME_DEFAULT);
-                Integer alarmNotifyCount = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_COUNT, SysConstant.ALARM_NOTIFY_COUNT_DEFAULT);
+                Integer alarmNotifyTime = SysConfig.instance.getAlarmNotifyTime();
+                Integer alarmNotifyCount = SysConfig.instance.getAlarmNotifyCount();
                 if (alarmNotifyTime == null || alarmNotifyCount == null || alarmNotifyTime == 0 || alarmNotifyCount == 0) {
                     sendMsgTalk(logData);
                 } else {
@@ -125,18 +129,19 @@ public class NotifyMessageTools {
 
     /**
      * 是否过滤聚合报警
+     *
      * @param errorMessage
      * @param exceptionMessage
      * @return
      */
     private boolean isFilterAggre(String errorMessage, String exceptionMessage) {
-        String alarmAggreWhiteList = ConfigUtils.getProperty(SysConstant.ALARM_AGGRE_WHITE_LIST, null);
-
+        String alarmAggreWhiteList = SysConfig.instance.getAlarmAggreWhiteList();
         return LogUtils.filter(errorMessage, alarmAggreWhiteList) || LogUtils.filter(exceptionMessage, alarmAggreWhiteList);
     }
 
     /**
      * 发送钉钉
+     *
      * @param logData
      */
     public void sendMsgTalk(LogData logData) {
@@ -182,7 +187,7 @@ public class NotifyMessageTools {
             builder.append("+ ").append(MDCConstantEnum.EVENT_PAYLOAD.getName()).append("：").append(logData.getEventPayload()).append(System.getProperty("line.separator"));
         }
         String exceptionMessage = StringUtils.isNotBlank(logData.getExceptionMessage()) ? logData.getExceptionMessage().replaceAll(System.getProperty("line.separator"), " ").replaceAll("\n", " ") : "";
-        builder.append(" ").append(MDCConstantEnum.EXCEPTION_MESSAGE.getName()).append("：").append(exceptionMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? exceptionMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT)+"..." : exceptionMessage).append(System.getProperty("line.separator"));
+        builder.append(" ").append(MDCConstantEnum.EXCEPTION_MESSAGE.getName()).append("：").append(exceptionMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? exceptionMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT) + "..." : exceptionMessage).append(System.getProperty("line.separator"));
         builder.append(" ").append(MDCConstantEnum.EXCEPTION_STACKTRACE.getName()).append("：").append(System.getProperty("line.separator")).append(System.getProperty("line.separator")).append("`").append(logData.getExceptionStackTrace().replace("###", "-###")).append("`");
         builder = SysConstant.WELCOME.equals(logData.getErrorMessage()) ? getWelcomeContent(logData) : builder;
         message.setContent(builder.toString());
@@ -191,6 +196,7 @@ public class NotifyMessageTools {
 
     /**
      * 获取欢迎语内容格式
+     *
      * @param logData
      * @return
      */
@@ -210,6 +216,7 @@ public class NotifyMessageTools {
 
     /**
      * 获取部署tag号
+     *
      * @return
      */
     private String getDeployTag() {
@@ -230,6 +237,7 @@ public class NotifyMessageTools {
 
     /**
      * 发送钉钉
+     *
      * @param logCompressData
      */
     public void sendAlarmTalk(LogCompressData logCompressData) {
@@ -237,9 +245,9 @@ public class NotifyMessageTools {
         message.setTitle(StringUtils.isNotBlank(logCompressData.getRequestURI()) ? logCompressData.getRequestURI() : "error");
         // 单独设置异常信息或error信息
         String exceptionMessage = StringUtils.isNotBlank(logCompressData.getExceptionMessage()) ? logCompressData.getExceptionMessage().replaceAll(System.getProperty("line.separator"), " ").replaceAll("\n", " ").replaceAll("\\d+", "X") : "";
-        String exceptionMessageBuilder = LogConstantEnum.EXCEPTION_MESSAGE.getName() + "：" + (exceptionMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? exceptionMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT)+"..." : exceptionMessage);
+        String exceptionMessageBuilder = LogConstantEnum.EXCEPTION_MESSAGE.getName() + "：" + (exceptionMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? exceptionMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT) + "..." : exceptionMessage);
         String errorMessage = StringUtils.isNotBlank(logCompressData.getErrorMessage()) ? logCompressData.getErrorMessage().replaceAll(System.getProperty("line.separator"), " ").replaceAll("\n", " ").replaceAll("\\d+", "X") : "";
-        String errorMessageBuilder = LogConstantEnum.ERROR_MESSAGE.getName() + "：" + (errorMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? errorMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT)+"..." : errorMessage);
+        String errorMessageBuilder = LogConstantEnum.ERROR_MESSAGE.getName() + "：" + (errorMessage.length() > SysConstant.ALARM_MESSAGE_STR_DEFAULT ? errorMessage.substring(0, SysConstant.ALARM_MESSAGE_STR_DEFAULT) + "..." : errorMessage);
         String messageBuilder = StringUtils.isNotBlank(logCompressData.getExceptionMessage()) ? exceptionMessageBuilder : errorMessageBuilder;
         // 组装钉钉消息
         String builder = "### **" + LogConstantEnum.REQUEST_URI.getName() + "：" + logCompressData.getRequestURI() + "**" + System.getProperty("line.separator") +
@@ -256,6 +264,7 @@ public class NotifyMessageTools {
 
     /**
      * 发送钉钉
+     *
      * @param logUriElapsedData
      */
     public void sendAlarmTalk(LogUriElapsedData logUriElapsedData) {
@@ -284,14 +293,16 @@ public class NotifyMessageTools {
 
 
     public static void main(String[] args) {
-        ConfigUtils.saveProperty(SysConstant.ALARM_DINGTALK,"[ { \"webHook\": \"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b90b1e53-f75c-42dc-8636-e3d69a9c78f4\"} ]");
-        ConfigUtils.saveProperty(SysConstant.ALARM_ENABLED,"true");
-        ConfigUtils.saveProperty(SysConstant.ALARM_SERIOUS_DINGTALK,"[ { \"webHook\": \"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b90b1e53-f75c-42dc-8636-e3d69a9c78f4\"} ]");
-        ConfigUtils.saveProperty(SysConstant.ALARM_STACKNUM,"10");
-        ConfigUtils.saveProperty(SysConstant.ALARM_WHITE_LIST,"");
-        ConfigUtils.saveProperty(SysConstant.ALARM_AGGRE_WHITE_LIST,"");
-        ConfigUtils.saveProperty(SysConstant.ALARM_NOTIFY_TIME,"1");
-        ConfigUtils.saveProperty(SysConstant.ALARM_NOTIFY_COUNT,"1");
+        Map<String, String> map = Maps.newHashMap();
+        map.put(SysConstant.ALARM_DINGTALK, "[ { \"webHook\": \"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b90b1e53-f75c-42dc-8636-e3d69a9c78f4\"} ]");
+        map.put(SysConstant.ALARM_ENABLED, "true");
+        map.put(SysConstant.ALARM_SERIOUS_DINGTALK, "[ { \"webHook\": \"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=b90b1e53-f75c-42dc-8636-e3d69a9c78f4\"} ]");
+        map.put(SysConstant.ALARM_STACKNUM, "10");
+        map.put(SysConstant.ALARM_WHITE_LIST, "");
+        map.put(SysConstant.ALARM_AGGRE_WHITE_LIST, "");
+        map.put(SysConstant.ALARM_NOTIFY_TIME, "1");
+        map.put(SysConstant.ALARM_NOTIFY_COUNT, "1");
+        SysConfig.convertMap2SysConfig(map);
         String msg = "这是个错误的信息";
         String message = "这是个exception";
         String stackTrace = "这是个堆栈信息";
@@ -306,7 +317,7 @@ public class NotifyMessageTools {
         logData.setFilter(LogUtils.filter(filterMessage));
         // 发送消息
         NotifyMessageTools.getInstance().sendMessage(logData);
-        while (true){
+        while (true) {
 
         }
     }

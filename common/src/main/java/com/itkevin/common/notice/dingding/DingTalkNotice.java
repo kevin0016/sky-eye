@@ -4,11 +4,11 @@ import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogLevelEnum;
 import com.itkevin.common.notice.AbstractNotice;
 import com.itkevin.common.notice.MarkDownBaseMessage;
-import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.StringConverterFactory;
 import com.jakewharton.retrofit2.adapter.reactor.ReactorCallAdapterFactory;
@@ -76,8 +76,8 @@ public class DingTalkNotice extends AbstractNotice {
         try {
             String level = dingMarkDownMessage.getLevel();
             String alarmDingTalk = StringUtils.isNotBlank(level) && level.equals(LogLevelEnum.SERIOUS.name())
-                    ? ConfigUtils.getProperty(SysConstant.ALARM_SERIOUS_DINGTALK, "")
-                    : ConfigUtils.getProperty(SysConstant.ALARM_DINGTALK, "");
+                    ? SysConfig.instance.getAlarmSeriousTalkHook()
+                    : SysConfig.instance.getAlarmTalkHook();
             if (StringUtils.isBlank(alarmDingTalk)) {
                 log.warn("log skyeye >>> config 'skyeye.log.alarm.dingtalk' or 'skyeye.log.alarm.serious.dingtalk' is null");
                 return;

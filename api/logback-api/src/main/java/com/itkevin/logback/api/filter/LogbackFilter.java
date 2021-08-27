@@ -7,11 +7,11 @@ import ch.qos.logback.classic.spi.ThrowableProxy;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import cn.hutool.core.date.DateUtil;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogTypeEnum;
 import com.itkevin.common.model.FilterMessage;
 import com.itkevin.common.model.LogData;
-import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.LogUtils;
 import com.itkevin.common.notice.NotifyMessageTools;
@@ -31,7 +31,7 @@ public class LogbackFilter extends Filter<ILoggingEvent> {
         try {
             // error日志
             if (Level.ERROR.equals(event.getLevel())) {
-                if (Boolean.TRUE.toString().equalsIgnoreCase(ConfigUtils.getProperty(SysConstant.ALARM_ENABLED, Boolean.FALSE.toString()))) {
+                if (SysConfig.instance.getAlarmEnabled()) {
                     // error信息
                     String msg = event.getFormattedMessage() != null ? event.getFormattedMessage().trim() : "";
                     // 异常message、异常堆栈

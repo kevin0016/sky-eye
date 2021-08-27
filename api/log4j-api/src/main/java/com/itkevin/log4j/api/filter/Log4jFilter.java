@@ -1,11 +1,11 @@
 package com.itkevin.log4j.api.filter;
 
 import cn.hutool.core.date.DateUtil;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.LogTypeEnum;
 import com.itkevin.common.model.FilterMessage;
 import com.itkevin.common.model.LogData;
-import com.itkevin.common.util.ConfigUtils;
 import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.LogUtils;
 import com.itkevin.common.notice.NotifyMessageTools;
@@ -30,7 +30,7 @@ public class Log4jFilter extends Filter {
         try {
             // error日志
             if (Level.ERROR.equals(event.getLevel())) {
-                if (Boolean.TRUE.toString().equalsIgnoreCase(ConfigUtils.getProperty(SysConstant.ALARM_ENABLED, Boolean.FALSE.toString()))) {
+                if (SysConfig.instance.getAlarmEnabled()) {
                     // error信息
                     String msg = event.getRenderedMessage() != null ? event.getRenderedMessage().trim() : "";
                     // 获取异常

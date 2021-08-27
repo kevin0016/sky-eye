@@ -1,6 +1,7 @@
 package com.itkevin.common.util;
 
 import cn.hutool.json.JSONUtil;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.BusinessTypeEnum;
 import com.itkevin.common.model.*;
@@ -134,8 +135,8 @@ public class HashedWheelUtils {
     private static void handleHashedWheelData(HashedWheelData hashedWheelData) {
         String businessType = hashedWheelData.getBusinessType();
         if (BusinessTypeEnum.NOTIFY.name().equalsIgnoreCase(businessType)) {
-            Integer alarmNotifyTime = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_TIME, SysConstant.ALARM_NOTIFY_TIME_DEFAULT);
-            Integer alarmNotifyCount = ConfigUtils.getIntProperty(SysConstant.ALARM_NOTIFY_COUNT, SysConstant.ALARM_NOTIFY_COUNT_DEFAULT);
+            Integer alarmNotifyTime = SysConfig.instance.getAlarmNotifyTime();
+            Integer alarmNotifyCount = SysConfig.instance.getAlarmNotifyCount();
             Integer count = LocalCacheUtils.getIntCache(hashedWheelData.getBusinessId());
             // 实际报警次数超过阀值则发送聚合报警消息
             if (count > alarmNotifyCount) {
@@ -153,8 +154,8 @@ public class HashedWheelUtils {
             }
         }
         if (BusinessTypeEnum.URI_ELAPSED.name().equalsIgnoreCase(businessType)) {
-            Integer alarmUriElapsedTime = ConfigUtils.getIntProperty(SysConstant.ALARM_URI_ELAPSED_TIME, 0);
-            Integer alarmUriElapsedCount = ConfigUtils.getIntProperty(SysConstant.ALARM_URI_ELAPSED_COUNT, 0);
+            Integer alarmUriElapsedTime = SysConfig.instance.getAlarmUriElapsedTime();
+            Integer alarmUriElapsedCount = SysConfig.instance.getAlarmUriElapsedCount();
             Integer count = LocalCacheUtils.getIntCache(hashedWheelData.getBusinessId());
             // 耗时大于指定时间的次数超过阀值则发送聚合消息
             if (count > alarmUriElapsedCount) {
