@@ -1,9 +1,9 @@
 package com.itkevin.web.common.filter;
 
 import com.itkevin.common.model.UriElapsedCollect;
-import com.itkevin.common.util.CustomRequestWrapper;
+import com.itkevin.web.common.util.CustomRequestWrapper;
 import com.itkevin.common.util.ElapsedUtils;
-import com.itkevin.common.util.HttpRequestUtil;
+import com.itkevin.web.common.util.HttpRequestUtil;
 import com.itkevin.common.util.MDCUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;

@@ -1,4 +1,4 @@
-package com.itkevin.common.util;
+package com.itkevin.web.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 

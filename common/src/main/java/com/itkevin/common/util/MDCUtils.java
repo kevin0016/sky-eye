@@ -1,8 +1,8 @@
 package com.itkevin.common.util;
 
+import cn.hutool.core.collection.CollectionUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
 
@@ -80,7 +80,7 @@ public class MDCUtils {
      */
     public static void setMDC(Map<String, String> mdc) {
         try {
-            if (!CollectionUtils.isEmpty(mdc)) {
+            if (!CollectionUtil.isEmpty(mdc)) {
                 MDC.setContextMap(mdc);
             }
         } catch (Exception e) {

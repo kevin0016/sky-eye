@@ -1,5 +1,6 @@
 package com.itkevin.common.notice;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.HashUtil;
@@ -22,12 +23,10 @@ import com.itkevin.common.util.LocalCacheUtils;
 import com.itkevin.common.util.LogUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -225,7 +224,7 @@ public class NotifyMessageTools {
             String path = System.getProperty("user.dir") + "/GIT_VERSION";
             if (FileUtil.exist(path)) {
                 List<String> lines = FileUtil.readUtf8Lines(path);
-                if (!CollectionUtils.isEmpty(lines)) {
+                if (!CollectionUtil.isEmpty(lines)) {
                     deployTag = lines.get(0);
                 }
             }

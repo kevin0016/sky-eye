@@ -10,7 +10,6 @@
 //import net.bytebuddy.matcher.ElementMatchers;
 //import org.springframework.aop.support.AopUtils;
 //import org.springframework.context.ApplicationContext;
-//import org.springframework.util.CollectionUtils;
 //
 //import java.util.Map;
 //
@@ -34,7 +33,7 @@
 //     */
 //    private static void byteBuddyMq(ApplicationContext applicationContext) {
 //        Map<String, ConsumerCallback> consumerCallbackMap = applicationContext.getBeansOfType(ConsumerCallback.class);
-//        if (!CollectionUtils.isEmpty(consumerCallbackMap)) {
+//        if (!CollectionUtil.isEmpty(consumerCallbackMap)) {
 //            consumerCallbackMap.forEach((name, consumerCallback) -> {
 //                try{
 //                    log.info("byteBuddyMq consumerCallback : {}, class {}",name,AopUtils.getTargetClass(consumerCallback));
@@ -50,7 +49,7 @@
 //            });
 //        }
 //        Map<String, BatchConsumerCallback> batchConsumerCallbackMap = applicationContext.getBeansOfType(BatchConsumerCallback.class);
-//        if (!CollectionUtils.isEmpty(batchConsumerCallbackMap)) {
+//        if (!CollectionUtil.isEmpty(batchConsumerCallbackMap)) {
 //            batchConsumerCallbackMap.forEach((name, batchConsumerCallback) -> {
 //               try{
 //                   log.info("byteBuddyMq batchConsumerCallback : {}, class {}: ",name,AopUtils.getTargetClass(batchConsumerCallback));
@@ -72,7 +71,7 @@
 //     */
 //    private static void byteBuddyJob(ApplicationContext applicationContext) {
 //        Map<String, Object> jobHandlerMap = applicationContext.getBeansWithAnnotation(JobHandler.class);
-//        if (!CollectionUtils.isEmpty(jobHandlerMap)) {
+//        if (!CollectionUtil.isEmpty(jobHandlerMap)) {
 //            try{
 //                jobHandlerMap.forEach((name, jobHandler) -> {
 //                    log.info("byteBuddyJob : {},class : {}",name,AopUtils.getTargetClass(jobHandler));

@@ -8,7 +8,6 @@
 //import net.bytebuddy.asm.Advice;
 //import org.apache.rocketmq.common.message.MessageExt;
 //import org.apache.skywalking.apm.toolkit.trace.TraceContext;
-//import org.springframework.util.CollectionUtils;
 //
 //import java.lang.reflect.Method;
 //import java.util.List;
@@ -22,7 +21,7 @@
 //        try {
 //            @SuppressWarnings("unchecked")
 //            List<BatchConsumerCallback.MQMessage> batchMessage = arguments != null && arguments.length > 0 ? (List<BatchConsumerCallback.MQMessage>) arguments[0] : null;
-//            if (!CollectionUtils.isEmpty(batchMessage)) {
+//            if (!CollectionUtil.isEmpty(batchMessage)) {
 //                List<String> topicList = Lists.newArrayList();
 //                List<String> msgIdList = Lists.newArrayList();
 //                List<String> keysList = Lists.newArrayList();

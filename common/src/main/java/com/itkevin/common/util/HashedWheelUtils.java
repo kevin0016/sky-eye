@@ -1,5 +1,6 @@
 package com.itkevin.common.util;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
@@ -8,7 +9,6 @@ import com.itkevin.common.model.*;
 import com.itkevin.common.notice.NotifyMessageTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -87,7 +87,7 @@ public class HashedWheelUtils {
         }
         // 获取时间轮当前位置的任务列表
         List<String> list = LocalCacheUtils.smember(WHEEL_WAIT_INDEX + currentIndex);
-        if (!CollectionUtils.isEmpty(list)) {
+        if (!CollectionUtil.isEmpty(list)) {
             // 循环处理任务
             for (String task : list) {
                 String businessId = "";

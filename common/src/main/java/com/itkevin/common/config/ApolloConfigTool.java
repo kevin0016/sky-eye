@@ -1,10 +1,10 @@
 package com.itkevin.common.config;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.ctrip.framework.apollo.Config;
 import com.ctrip.framework.apollo.ConfigService;
 import com.google.common.collect.Maps;
 import com.itkevin.common.listener.ConfigListener;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Map;
 import java.util.Set;
@@ -18,7 +18,7 @@ public class ApolloConfigTool implements ConfigTool{
         Config config = ConfigService.getConfig("skyeye");
         config.addChangeListener(new ConfigListener());
         Set<String> propertyNames = config.getPropertyNames();
-        if (!CollectionUtils.isEmpty(propertyNames)) {
+        if (!CollectionUtil.isEmpty(propertyNames)) {
             propertyNames.forEach(propertyName -> {
                 String propertyValue = config.getProperty(propertyName, null);
                 map.put(propertyName,propertyValue);

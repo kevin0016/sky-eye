@@ -1,6 +1,7 @@
-package com.itkevin.common.util;
+package com.itkevin.web.common.util;
 
 import com.itkevin.common.enums.MDCConstantEnum;
+import com.itkevin.common.util.MDCUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.skywalking.apm.toolkit.trace.TraceContext;
 import org.springframework.http.MediaType;
@@ -94,9 +95,9 @@ public class HttpRequestUtil {
     public static void mdc(HttpServletRequest request) {
         try {
             MDCUtils.put(MDCConstantEnum.SERVER_NAME.getCode(), request.getServerName());
-            MDCUtils.put(MDCConstantEnum.SOURCE_IP.getCode(), IPUtils.getIPAddress(request));
-            MDCUtils.put(MDCConstantEnum.SERVER_IP.getCode(), IPUtils.getLocalIp());
-            MDCUtils.put(MDCConstantEnum.SERVER_HOSTNAME.getCode(), IPUtils.getLocalHostName());
+            MDCUtils.put(MDCConstantEnum.SOURCE_IP.getCode(), HttpIPUtils.getIPAddress(request));
+            MDCUtils.put(MDCConstantEnum.SERVER_IP.getCode(), HttpIPUtils.getLocalIp());
+            MDCUtils.put(MDCConstantEnum.SERVER_HOSTNAME.getCode(), HttpIPUtils.getLocalHostName());
             MDCUtils.put(MDCConstantEnum.REQUEST_TYPE.getCode(), request.getScheme() + " " + request.getMethod());
             MDCUtils.put(MDCConstantEnum.TRACE_ID.getCode(), TraceContext.traceId());
             MDCUtils.put(MDCConstantEnum.REQUEST_URI.getCode(), request.getRequestURI());

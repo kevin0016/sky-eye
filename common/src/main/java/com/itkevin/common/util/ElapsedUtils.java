@@ -1,5 +1,6 @@
 package com.itkevin.common.util;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONUtil;
 import com.google.common.collect.Lists;
 import com.itkevin.common.config.SysConfig;
@@ -12,7 +13,6 @@ import com.itkevin.common.model.UriElapsedCollect;
 import com.itkevin.common.model.UriElapsedData;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
@@ -115,7 +115,7 @@ public class ElapsedUtils {
         // 获取全局接口耗时时间阀值
         Long alarmUriElapsedGlobal = SysConfig.instance.getAlarmUriElapsedGlobal();
 
-        return CollectionUtils.isEmpty(elapsedList) ? alarmUriElapsedGlobal : elapsedList.get(0);
+        return CollectionUtil.isEmpty(elapsedList) ? alarmUriElapsedGlobal : elapsedList.get(0);
     }
 
     /**
@@ -135,7 +135,7 @@ public class ElapsedUtils {
     private static synchronized void storageTraceidListData(String uniqueKey, String traceId) {
         String traceIdListKey = uniqueKey + URI_ELAPSED_TRACEID_LIST;
         List<String> traceIds = LocalCacheUtils.smember(traceIdListKey);
-        if (CollectionUtils.isEmpty(traceIds)) {
+        if (CollectionUtil.isEmpty(traceIds)) {
             LocalCacheUtils.sadd(traceIdListKey, traceId);
         } else {
             if (traceIds.size() < 3) {

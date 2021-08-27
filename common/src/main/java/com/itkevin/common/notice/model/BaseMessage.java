@@ -1,9 +1,9 @@
 package com.itkevin.common.notice.model;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONObject;
 import com.itkevin.common.enums.LogLevelEnum;
 import lombok.Data;
-import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,7 +36,7 @@ public class BaseMessage implements Serializable {
      */
     public JSONObject setAtAllAndMobile(List<String> atMobiles) {
         JSONObject atMobile = new JSONObject();
-        if (!CollectionUtils.isEmpty(atMobiles)) {
+        if (!CollectionUtil.isEmpty(atMobiles)) {
             atMobile.put("atMobiles", atMobiles);
             atMobile.put("isAtAll", false);
         }

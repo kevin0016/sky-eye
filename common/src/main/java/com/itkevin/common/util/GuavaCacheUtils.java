@@ -1,10 +1,10 @@
 package com.itkevin.common.util;
 
+import cn.hutool.core.collection.CollectionUtil;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -137,7 +137,7 @@ public class GuavaCacheUtils {
      */
     protected static void remove(List<String> keys) {
         try {
-            if (!CollectionUtils.isEmpty(keys)) {
+            if (!CollectionUtil.isEmpty(keys)) {
                 cache.invalidateAll(keys);
             }
         } catch (Exception e) {
