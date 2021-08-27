@@ -125,4 +125,9 @@ public class SysConstant {
      */
     public static final String ALARM_TOOL_DEFAULT = "wework";
 
+    /**
+     * 需要监控的日志appender
+     */
+    public static final String LOG_APPENDER = "skyeye.log.appender";
+
 }

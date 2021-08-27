@@ -44,7 +44,7 @@ public class LogbackApplicationListener implements ApplicationListener<ContextRe
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = context.getLogger(Logger.ROOT_LOGGER_NAME);
         Appender<ILoggingEvent> fileAppenderERROR = logger.getAppender("console");
-        Appender<ILoggingEvent> fileAppender = fileAppenderERROR == null ? logger.getAppender("file") : fileAppenderERROR;
+        Appender<ILoggingEvent> fileAppender = fileAppenderERROR == null ? logger.getAppender(SysConfig.instance.getSkyeyeLogAppender()) : fileAppenderERROR;
         if (fileAppender != null) {
             List<Filter<ILoggingEvent>> filters = fileAppender.getCopyOfAttachedFiltersList();
             for (Filter<ILoggingEvent> filter : filters) {

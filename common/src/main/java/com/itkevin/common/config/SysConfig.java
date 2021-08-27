@@ -91,8 +91,19 @@ public class SysConfig implements Serializable {
     @Getter
     private String alarmTool = "wework";
 
+    /**
+     * 需要监控的LogAppender名称
+     */
+    @Getter
+    private String skyeyeLogAppender = "file";
+
 
     public static  SysConfig convertMap2SysConfig(Map<String,String> map){
+        String skyeyeLogAppenderStr = map.get(SysConstant.LOG_APPENDER);
+        if(StringUtils.isNotBlank(skyeyeLogAppenderStr)){
+            instance.skyeyeLogAppender = skyeyeLogAppenderStr;
+        }
+
         String enableStr = map.get(SysConstant.ALARM_ENABLED);
         if(!Objects.isNull(enableStr)){
             instance.alarmEnabled = Boolean.parseBoolean(enableStr);
