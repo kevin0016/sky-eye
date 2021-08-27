@@ -73,13 +73,16 @@ skyeye.log.alarm.uri.elapsed.count = 10
 skyeye.log.alarm.uri.elapsed = [{"uri":"/user/logTest","elapsed":2000}]
 # 指定接口耗时时间阀值（单位毫秒，全局指定，不配置默认1000毫秒）
 skyeye.log.alarm.uri.elapsed.global = 1000
+# 选择提醒工具
 skyeye.log.alarm.tool = wework
+# 设置需要监控的logAppender
+skyeye.log.appender = file
 ```
 #### 4、通知格式
 ```
 error信息：这是个错误的信息
  服务名称：null
- 服务器IP：192.168.199.191
+ 服务器IP：192.168.199.1
  服务器hostname：localhost
  发生时间：2021-08-22 16:56:06
  请求类型：null
@@ -92,11 +95,14 @@ error信息：这是个错误的信息
 #### 5、自定义通知接入方法
 - 1、继承`com.itkevin.common.notice.AbstractNotice`类，实现`com.itkevin.common.notice.NoticeInterface#sendMessage`和`com.itkevin.common.notice.NoticeInterface#filterFlag`两个方法
 - 2、在apollo上配置`skyeye.log.alarm.tool`属性，属性值设置为`com.itkevin.common.notice.NoticeInterface#filterFlag`方法的返回值
+- 3、在resources目录下创建META-INF.services文件夹创建名为`com.itkevin.common.notice.NoticeInterface`的文件，并将自己的实现类全路径写到这个文件中
 - 备注：目前`com.itkevin.common.notice.NoticeInterface#sendMessage`中暂时只支持markdown格式，后期会开放自定义格式
+
 #### 6、自定义配置中心接入方法
 - 1、实现`com.itkevin.common.config.ConfigTool`接口
 - 2、`com.itkevin.common.config.ConfigTool#getConfig`方法作为配置写入方法，需要把所有的配置信息返回到map中
 - 3、`com.itkevin.common.config.ConfigTool#sortFlag`方法是选取配置的方法，系统默认使用Apollo配置中心返回为0，想要使用自己的配置只需要返回一个大于0的数值就可以
+- 4、在resources目录下创建META-INF.services文件夹创建名为`com.itkevin.common.config.ConfigTool`的文件，并将自己的实现类全路径写到这个文件中
 - 备注：选取配置中心的方法可能不是很优雅，后面版本可能会修改
 
 #### 备注
