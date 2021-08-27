@@ -2,6 +2,7 @@ package com.itkevin.common.util;
 
 import cn.hutool.json.JSONUtil;
 import com.google.common.collect.Lists;
+import com.itkevin.common.config.SysConfig;
 import com.itkevin.common.constants.SysConstant;
 import com.itkevin.common.enums.BusinessTypeEnum;
 import com.itkevin.common.enums.MDCConstantEnum;
@@ -62,8 +63,8 @@ public class ElapsedUtils {
                 if (StringUtils.isNotBlank(requestURI)) {
                     requestURI = requestURI.replaceAll("/\\d+", "/{PathVariable}");
                     // 接口耗时报警间隔时间、接口耗时超过阀值时间次数
-                    Integer alarmUriElapsedTime = ConfigUtils.getIntProperty(SysConstant.ALARM_URI_ELAPSED_TIME, 0);
-                    Integer alarmUriElapsedCount = ConfigUtils.getIntProperty(SysConstant.ALARM_URI_ELAPSED_COUNT, 0);
+                    Integer alarmUriElapsedTime = SysConfig.instance.getAlarmUriElapsedTime();
+                    Integer alarmUriElapsedCount = SysConfig.instance.getAlarmUriElapsedCount();
                     if (alarmUriElapsedTime == null || alarmUriElapsedCount == null || alarmUriElapsedTime == 0 || alarmUriElapsedCount == 0) {
                         return;
                     }
@@ -104,7 +105,7 @@ public class ElapsedUtils {
             return 0;
         }
         // 获取指定URI耗时时间阀值
-        String alarmUriElapsed = ConfigUtils.getProperty(SysConstant.ALARM_URI_ELAPSED, null);
+        String alarmUriElapsed = SysConfig.instance.getAlarmUriElapsed();
         List<UriElapsedData> uriElapsedDataList = StringUtils.isNotBlank(alarmUriElapsed) ? JSONUtil.toList(JSONUtil.parseArray(alarmUriElapsed), UriElapsedData.class) : Lists.newArrayList();
         uriElapsedDataList = uriElapsedDataList.stream()
                 .filter(uriElapsedData -> StringUtils.isNotBlank(uriElapsedData.getUri()))
@@ -112,7 +113,7 @@ public class ElapsedUtils {
                 .collect(Collectors.toList());
         List<Long> elapsedList = uriElapsedDataList.stream().filter(uriElapsedData -> uriElapsedData.getUri().equalsIgnoreCase(requestURI)).map(UriElapsedData::getElapsed).collect(Collectors.toList());
         // 获取全局接口耗时时间阀值
-        Long alarmUriElapsedGlobal = ConfigUtils.getLongProperty(SysConstant.ALARM_URI_ELAPSED_GLOBAL, SysConstant.ALARM_URI_ELAPSED_DEFAULT);
+        Long alarmUriElapsedGlobal = SysConfig.instance.getAlarmUriElapsedGlobal();
 
         return CollectionUtils.isEmpty(elapsedList) ? alarmUriElapsedGlobal : elapsedList.get(0);
     }

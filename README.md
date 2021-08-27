@@ -75,7 +75,7 @@ skyeye.log.alarm.uri.elapsed = [{"uri":"/user/logTest","elapsed":2000}]
 skyeye.log.alarm.uri.elapsed.global = 1000
 skyeye.log.alarm.tool = wework
 ```
-#### 通知格式
+#### 4、通知格式
 ```
 error信息：这是个错误的信息
  服务名称：null
@@ -89,11 +89,15 @@ error信息：这是个错误的信息
  异常堆栈：
  这是个堆栈信息  
 ```
-#### 自定义通知接入方法
+#### 5、自定义通知接入方法
 - 1、继承`com.itkevin.common.notice.AbstractNotice`类，实现`com.itkevin.common.notice.NoticeInterface#sendMessage`和`com.itkevin.common.notice.NoticeInterface#filterFlag`两个方法
 - 2、在apollo上配置`skyeye.log.alarm.tool`属性，属性值设置为`com.itkevin.common.notice.NoticeInterface#filterFlag`方法的返回值
 - 备注：目前`com.itkevin.common.notice.NoticeInterface#sendMessage`中暂时只支持markdown格式，后期会开放自定义格式
-
+#### 6、自定义配置中心接入方法
+- 1、实现`com.itkevin.common.config.ConfigTool`接口
+- 2、`com.itkevin.common.config.ConfigTool#getConfig`方法作为配置写入方法，需要把所有的配置信息返回到map中
+- 3、`com.itkevin.common.config.ConfigTool#sortFlag`方法是选取配置的方法，系统默认使用Apollo配置中心返回为0，想要使用自己的配置只需要返回一个大于0的数值就可以
+- 备注：选取配置中心的方法可能不是很优雅，后面版本可能会修改
 
 #### 备注
 - 目前接口超时报警仅支持web,后期会同步支持部分的rpc框架

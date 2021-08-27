@@ -4,9 +4,13 @@ import com.ctrip.framework.apollo.ConfigChangeListener;
 import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.ctrip.framework.apollo.model.ConfigChangeEvent;
-import com.itkevin.common.util.ConfigUtils;
+import com.google.common.collect.Maps;
+import com.itkevin.common.config.SysConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class ConfigListener implements ConfigChangeListener {
@@ -24,10 +28,10 @@ public class ConfigListener implements ConfigChangeListener {
                     continue;
                 }
                 log.info("log skyeye >>> ConfigListener changeType: {}, propertyName: {}, oldValue: {}, newValue: {}", changeType.name(), propertyName, oldValue, newValue);
-                if(PropertyChangeType.DELETED.equals(changeType)){
-                    ConfigUtils.removeProperty(propertyName);
-                } else {
-                    ConfigUtils.saveProperty(propertyName,newValue);
+                if(!PropertyChangeType.DELETED.equals(changeType)){
+                    Map<String, String> map = Maps.newHashMap();
+                    map.put(propertyName,newValue);
+                    SysConfig.convertMap2SysConfig(map);
                 }
             }
         } catch (Exception e) {
