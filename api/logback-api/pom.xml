@@ -5,18 +5,18 @@
     <parent>
         <artifactId>sky-eye-api</artifactId>
         <groupId>com.itkevin</groupId>
-        <version>1.0</version>
+        <version>2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>logback-api</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <skyeye-common.version>1.0.0</skyeye-common.version>
+        <skyeye-common.version>2.0.0</skyeye-common.version>
         <logback-classic.version>1.2.3</logback-classic.version>
     </properties>
 

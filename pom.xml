@@ -7,7 +7,7 @@
     <groupId>com.itkevin</groupId>
     <artifactId>sky-eye</artifactId>
     <packaging>pom</packaging>
-    <version>1.0</version>
+    <version>2.0</version>
     <modules>
         <module>api</module>
         <module>common</module>
