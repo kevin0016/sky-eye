@@ -104,7 +104,6 @@
             <version>1.6.5</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.skywalking/apm-toolkit-trace -->
         <dependency>
             <groupId>org.apache.skywalking</groupId>
             <artifactId>apm-toolkit-trace</artifactId>
