@@ -30,6 +30,12 @@
             <groupId>com.itkevin</groupId>
             <artifactId>sky-eye-common</artifactId>
             <version>${skyeye-common.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

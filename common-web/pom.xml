@@ -16,7 +16,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <skyeye-common.version>1.0.0</skyeye-common.version>
+        <skyeye-common.version>2.0.0</skyeye-common.version>
     </properties>
     <dependencies>
 
@@ -24,6 +24,28 @@
             <groupId>com.itkevin</groupId>
             <artifactId>sky-eye-common</artifactId>
             <version>${skyeye-common.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>okhttp</artifactId>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>gson</artifactId>
+                    <groupId>com.google.code.gson</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>retrofit</artifactId>
+                    <groupId>com.squareup.retrofit2</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>reactor-core</artifactId>
+                    <groupId>io.projectreactor</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

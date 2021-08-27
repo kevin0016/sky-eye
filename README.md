@@ -105,6 +105,37 @@ error信息：这是个错误的信息
 - 4、在resources目录下创建META-INF.services文件夹创建名为`com.itkevin.common.config.ConfigTool`的文件，并将自己的实现类全路径写到这个文件中
 - 备注：选取配置中心的方法可能不是很优雅，后面版本可能会修改
 
+#### 7、建议配置
+建议在maven配置中添加强制版本号插件
+```xml
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-enforcer-plugin</artifactId>
+    <version>3.0.0-M2</version>
+    <executions>
+        <execution>
+            <id>enforce-versions</id>
+            <goals>
+                <goal>enforce</goal>
+            </goals>
+            <configuration>
+                <rules>
+                    <bannedDependencies>
+                        <searchTransitive>true</searchTransitive>
+                        <message>请排除jar包冲突：okhttp:3.14.4以下版本，hutool-all:5.3.2以下版本，slf4j-log4j12:1.7.5以下版本</message>
+                        <excludes>
+                            <exclude>com.squareup.okhttp3:okhttp:(,3.14.4)</exclude>
+                            <exclude>cn.hutool:hutool-all:(,5.3.2)</exclude>
+                            <exclude>org.slf4j:slf4j-log4j12:(,1.7.5)</exclude>
+                        </excludes>
+                    </bannedDependencies>
+                </rules>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
 #### 备注
 - 目前接口超时报警仅支持web,后期会同步支持部分的rpc框架
 - 目前仅支持apollo配置和钉钉报警，后期会开放配置接口，可自行选择配置，报警接口也会支持企业微信和飞书，并且开放通知接口，可自定接入报警
