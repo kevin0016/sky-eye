@@ -16,7 +16,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <skyeye-common.version>1.0.0</skyeye-common.version>
+        <skyeye-common.version>2.0.0</skyeye-common.version>
     </properties>
 
     <dependencies>
