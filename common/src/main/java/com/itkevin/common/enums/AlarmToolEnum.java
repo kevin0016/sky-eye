@@ -9,6 +9,7 @@ import java.util.Arrays;
 public enum AlarmToolEnum {
 
     WEWORK("wework", WorkWeiXinTalkNotice.class),
+
     DINGDING("dingding", DingTalkNotice.class);
 
     private String code;
